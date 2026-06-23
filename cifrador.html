@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DEDSEC://CRYPTO_NODE</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="theme-color" content="#050505">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           DEDSEC TOOLKIT v1.0.0 — CRYPTO_NODE  ·  AES-256 ECB
+           Visual: clandestine hacker workstation · strict monochrome
+           ═══════════════════════════════════════════════════════════ */
+
+        :root {
+            --white: #FFFFFF;
+            --t1: #E5E5E5;
+            --t2: #CFCFCF;
+            --t3: #8A8A8A;
+            --t4: #5A5A5A;
+            --bg0: #050505;
+            --bg1: #0A0A0A;
+            --bg2: #101010;
+            --bg3: #151515;
+            --bg4: #1C1C1C;
+            --line: rgba(255, 255, 255, 0.15);
+            --line-soft: rgba(255, 255, 255, 0.08);
+            --line-faint: rgba(255, 255, 255, 0.04);
+            --mono: 'JetBrains Mono', 'Share Tech Mono', 'IBM Plex Mono', monospace;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        ::selection {
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+        }
+
+        /* ── BOOT SCREEN ── */
+        #boot-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg0);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+        }
+
+        #boot-inner {
+            width: 90%;
+            max-width: 560px;
+            padding: 2rem;
+        }
+
+        #boot-logo {
+            color: var(--white);
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: 700;
+            letter-spacing: .15em;
+            margin-bottom: 2rem;
+        }
+
+            #boot-logo span {
+                color: var(--t3);
+            }
+
+        #boot-lines {
+            min-height: 160px;
+        }
+
+        .boot-line {
+            font-size: clamp(.7rem, 2vw, .82rem);
+            color: var(--t2);
+            margin-bottom: .45rem;
+            opacity: 0;
+            display: flex;
+            gap: .6rem;
+            align-items: flex-start;
+            animation: bootFade .15s ease forwards;
+        }
+
+            .boot-line .bl-ok {
+                color: var(--white);
+                flex-shrink: 0;
+            }
+
+            .boot-line .bl-txt {
+                color: var(--t2);
+            }
+
+        .boot-granted {
+            font-size: clamp(.9rem, 2.5vw, 1.1rem);
+            color: var(--white);
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: bootFade .3s ease .1s forwards;
+        }
+
+        .boot-bar {
+            height: 2px;
+            background: var(--bg3);
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .boot-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--white);
+            transition: width .1s linear;
+        }
+
+        @keyframes bootFade {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ── GLOBAL BODY ── */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: var(--bg0);
+            color: var(--t2);
+            font-family: var(--mono);
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+        }
+
+        /* On-brand monochrome scrollbars (for any internal scroll) */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,.22) transparent;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg1); }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,.16);
+            border: 1px solid var(--line);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.32); }
+        ::-webkit-scrollbar-corner { background: var(--bg1); }
+
+            /* CRT Scanlines */
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.22) 2px, rgba(0,0,0,.22) 4px);
+                pointer-events: none;
+                z-index: 500;
+                animation: flicker 8s infinite;
+            }
+            /* CRT Noise grain */
+            body::after {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+                pointer-events: none;
+                z-index: 499;
+                opacity: .5;
+            }
+
+        @keyframes flicker {
+            0%,96%,98%,100% { opacity: 1; }
+            97% { opacity: .96; }
+            99% { opacity: .98; }
+        }
+
+        /* Ambient vignette */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 60% 45% at 50% 0%, rgba(255,255,255,.025) 0, transparent 70%),
+                radial-gradient(ellipse 120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           OS WINDOW SHELL
+           ═══════════════════════════════════════════════════════════ */
+        .os-window {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            margin: 0;
+            background: var(--bg0);
+            opacity: 0;
+            transition: opacity .6s ease;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated background (fills empty gaps, on-brand) */
+        .bg-anim {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+            .bg-anim::before {
+                content: '';
+                position: absolute;
+                inset: -60%;
+                background-image: radial-gradient(rgba(255,255,255,.05) .8px, transparent .9px);
+                background-size: 22px 22px;
+                opacity: .55;
+                animation: bgDrift 38s linear infinite;
+            }
+            .bg-anim::after {
+                content: '';
+                position: absolute;
+                left: 0; right: 0;
+                height: 160px;
+                background: linear-gradient(transparent, rgba(255,255,255,.045), transparent);
+                animation: scanSweep 9s linear infinite;
+            }
+        @keyframes bgDrift {
+            from { transform: translate(0,0); }
+            to   { transform: translate(22px,22px); }
+        }
+        @keyframes scanSweep {
+            0%   { top: -160px; }
+            100% { top: 100%; }
+        }
+
+        /* ── TITLE BAR ── */
+        .os-titlebar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .55rem .9rem;
+            border-bottom: 1px solid var(--line);
+            background: var(--bg1);
+            font-size: .68rem;
+            letter-spacing: .08em;
+            color: var(--t2);
+            flex-shrink: 0;
+        }
+
+        .os-tb-left {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            min-width: 0;
+        }
+
+            .os-tb-left .pipe {
+                color: var(--t4);
+            }
+
+            .os-tb-left .tb-path {
+                color: var(--t1);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .os-tb-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+            color: var(--t3);
+        }
+
+        /* title-bar buttons (back-to-menu + sfx) */
+        .tb-btn {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--t2);
+            font-family: var(--mono);
+            font-size: .6rem;
+            letter-spacing: .08em;
+            padding: 4px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+            .tb-btn:hover {
+                background: var(--white);
+                color: var(--bg0);
+                border-color: var(--white);
+            }
+            .tb-btn.sfx-off { color: var(--t4); }
+
+        .os-ctrls {
+            display: flex;
+            gap: .7rem;
+            color: var(--t2);
+        }
+
+            .os-ctrls span {
+                cursor: default;
+                user-select: none;
+            }
+            .os-ctrls span:hover {
+                color: var(--white);
+            }
+            .os-ctrls .x-close { cursor: pointer; }
+
+        /* ── MAIN GRID ── */
+        .os-grid {
+            display: grid;
+            grid-template-columns: 248px 1fr 296px;
+            gap: 0;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            min-height: 0;
+        }
+
+        .col {
+            padding: 1rem;
+            min-width: 0;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .col-left {
+            border-right: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .col-center {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            padding: 1.2rem 1.4rem;
+        }
+
+        .col-right {
+            border-left: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Center: let SYSTEM_LOG absorb leftover height (no dead gap) */
+        .col-center > #sec-log {
+            flex: 1 1 auto;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+        }
+            #sec-log .panel-body {
+                flex: 1;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            #sec-log .log-scroll {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+            }
+
+        /* ── BODY (grid wrapper) ── */
+        .os-body {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* ── BOTTOM STATUS BAR ── */
+        .os-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .5rem .9rem;
+            border-top: 1px solid var(--line);
+            background: var(--bg1);
+            font-size: .6rem;
+            letter-spacing: .08em;
+            color: var(--t3);
+            text-transform: uppercase;
+            flex-shrink: 0;
+            gap: 1rem;
+        }
+
+            .os-footer .ft-right {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                color: var(--t2);
+            }
+
+            .os-footer .ft-brand {
+                color: var(--white);
+                letter-spacing: .2em;
+                font-weight: 700;
+            }
+
+        .signal {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 12px;
+        }
+
+            .signal i {
+                width: 3px;
+                background: var(--t3);
+                display: block;
+                animation: sig 1.6s infinite ease-in-out;
+            }
+            .signal i:nth-child(1){ height: 3px; animation-delay: 0s; }
+            .signal i:nth-child(2){ height: 6px; animation-delay: .2s; }
+            .signal i:nth-child(3){ height: 9px; animation-delay: .4s; }
+            .signal i:nth-child(4){ height: 12px; animation-delay: .6s; }
+
+        @keyframes sig {
+            0%,100% { opacity: .3; }
+            50% { opacity: 1; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           HUD PANELS
+           ═══════════════════════════════════════════════════════════ */
+        .hud {
+            border: 1px solid var(--line);
+            background: var(--bg1);
+            position: relative;
+        }
+
+        .hud-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .45rem .7rem;
+            border-bottom: 1px solid var(--line-soft);
+            background: rgba(255,255,255,.015);
+        }
+
+        .hud-title {
+            font-size: .6rem;
+            color: var(--t1);
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+            .hud-title::before {
+                content: '//';
+                color: var(--t4);
+            }
+
+        .hud-tag {
+            font-size: .6rem;
+            color: var(--t4);
+        }
+
+        .hud-body {
+            padding: .75rem .7rem;
+        }
+
+        /* ── BRAND / SKULL ── */
+        .brand {
+            text-align: center;
+            padding: .3rem 0 .2rem;
+        }
+
+        .skull {
+            font-family: var(--mono);
+            font-size: 7px;
+            line-height: 7px;
+            letter-spacing: 0;
+            color: var(--t1);
+            white-space: pre;
+            display: inline-block;
+            margin: 0;
+            opacity: .92;
+            filter: drop-shadow(0 0 1px rgba(255,255,255,.15));
+            animation: skullFlicker 9s infinite;
+        }
+
+        /* ── IMAGE / GIF SLOTS (fallback = ASCII art) ── */
+        .media-img {
+            display: none;          /* shown by JS only when a file is set */
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            background: transparent;
+            /* el negro del GIF se funde con el fondo oscuro;
+               solo queda visible la calavera */
+            mix-blend-mode: screen;
+        }
+        .brand-media {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+            .brand-media .media-img { max-height: 150px; }
+        .notes-media {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+            .notes-media .media-img { max-height: 96px; margin-top: .6rem; }
+        /* keep dropped media on-brand (toggle off by removing 'mono-media') */
+        .mono-media .media-img { filter: grayscale(1) contrast(1.05) brightness(1.05); }
+
+        @keyframes skullFlicker {
+            0%,93%,100% { opacity: .92; }
+            94% { opacity: .55; transform: translateX(-1px); }
+            95% { opacity: .92; transform: translateX(1px); }
+            96% { opacity: .7; }
+        }
+
+        .brand-sub {
+            font-size: .6rem;
+            color: var(--t3);
+            letter-spacing: .28em;
+            margin-top: .45rem;
+        }
+
+        /* ── KEY/VALUE STATUS ROWS ── */
+        .kv {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: .2rem .6rem;
+            font-size: .62rem;
+            letter-spacing: .04em;
+        }
+
+            .kv .k {
+                color: var(--t3);
+                text-transform: uppercase;
+            }
+            .kv .v {
+                color: var(--t1);
+                text-align: right;
+                white-space: nowrap;
+            }
+            .kv .v.dim { color: var(--t3); }
+
+        /* ── DOTTED WORLD MAP ── */
+        .worldmap {
+            margin-top: .8rem;
+            height: 70px;
+            background-image: radial-gradient(var(--t4) .8px, transparent .9px);
+            background-size: 5px 5px;
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 90'%3E%3Cpath fill='black' d='M20 30 q10 -8 24 -4 q12 4 8 14 q-6 10 -20 8 q-14 -2 -12 -18z M60 22 q18 -6 30 2 q8 8 0 16 q-12 8 -26 4 q-12 -6 -4 -22z M100 40 q12 -10 22 -2 q6 8 -2 16 q-10 6 -18 -2 q-8 -6 -2 -12z M120 18 q14 -4 22 6 q4 10 -8 14 q-12 2 -16 -8 q-2 -8 2 -12z M150 44 q12 -6 18 4 q4 10 -8 14 q-12 0 -14 -10 q0 -6 4 -8z M40 58 q16 -4 22 6 q2 10 -10 12 q-14 0 -16 -10 q0 -6 4 -8z'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 90'%3E%3Cpath fill='black' d='M20 30 q10 -8 24 -4 q12 4 8 14 q-6 10 -20 8 q-14 -2 -12 -18z M60 22 q18 -6 30 2 q8 8 0 16 q-12 8 -26 4 q-12 -6 -4 -22z M100 40 q12 -10 22 -2 q6 8 -2 16 q-10 6 -18 -2 q-8 -6 -2 -12z M120 18 q14 -4 22 6 q4 10 -8 14 q-12 2 -16 -8 q-2 -8 2 -12z M150 44 q12 -6 18 4 q4 10 -8 14 q-12 0 -14 -10 q0 -6 4 -8z M40 58 q16 -4 22 6 q2 10 -10 12 q-14 0 -16 -10 q0 -6 4 -8z'/%3E%3C/svg%3E");
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            opacity: .7;
+        }
+
+        /* ── METRIC BARS ── */
+        .metric {
+            display: grid;
+            grid-template-columns: 78px 46px 1fr;
+            align-items: center;
+            gap: .5rem;
+            font-size: .6rem;
+            letter-spacing: .04em;
+            margin-bottom: .5rem;
+        }
+            .metric:last-child { margin-bottom: 0; }
+
+            .metric .m-label {
+                color: var(--t3);
+                text-transform: uppercase;
+            }
+            .metric .m-val {
+                color: var(--t1);
+                text-align: right;
+            }
+            .metric .m-bar {
+                height: 7px;
+                background: var(--bg3);
+                border: 1px solid var(--line-soft);
+                position: relative;
+                overflow: hidden;
+            }
+            .metric .m-fill {
+                position: absolute;
+                inset: 0 auto 0 0;
+                background: repeating-linear-gradient(90deg, var(--t2) 0, var(--t2) 2px, transparent 2px, transparent 4px);
+                width: 20%;
+                transition: width .8s ease;
+            }
+
+        /* ── ACTIVE MODULES ── */
+        .module {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: .5rem;
+            font-size: .62rem;
+            padding: .25rem 0;
+            color: var(--t2);
+            border-bottom: 1px dashed var(--line-faint);
+        }
+            .module:last-child { border-bottom: none; }
+
+            .module .mod-name {
+                color: var(--t1);
+            }
+            .module .mod-name::before {
+                content: '> ';
+                color: var(--t4);
+            }
+            .module .mod-ver {
+                color: var(--t3);
+            }
+            .module .mod-ok {
+                color: var(--white);
+                letter-spacing: .05em;
+            }
+            .module .mod-ok::before { content: '[ '; color: var(--t4); }
+            .module .mod-ok::after  { content: ' ]'; color: var(--t4); }
+
+        /* ═══════════════════════════════════════════════════════════
+           CENTER — HEADER
+           ═══════════════════════════════════════════════════════════ */
+        .center-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: .9rem;
+            border-bottom: 1px solid var(--line-soft);
+            flex-wrap: wrap;
+        }
+
+        .ch-left {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+
+        .ch-icon {
+            width: 34px;
+            height: 34px;
+            stroke: var(--white);
+            fill: none;
+            stroke-width: 1.3;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            flex-shrink: 0;
+            opacity: .9;
+        }
+
+        .ch-id strong {
+            display: block;
+            font-size: .9rem;
+            color: var(--white);
+            letter-spacing: .1em;
+        }
+        .ch-id span {
+            font-size: .62rem;
+            color: var(--t3);
+            letter-spacing: .06em;
+        }
+
+        .ch-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #live-clock {
+            font-size: .82rem;
+            color: var(--t1);
+            letter-spacing: .1em;
+            font-family: var(--mono);
+        }
+
+        .lang-toggle {
+            display: flex;
+            border: 1px solid var(--line);
+        }
+
+        .lang-btn {
+            padding: 4px 11px;
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--t3);
+            background: transparent;
+            border: none;
+            border-left: 1px solid var(--line);
+            cursor: pointer;
+            letter-spacing: .08em;
+            transition: all .15s;
+        }
+            .lang-btn:first-child { border-left: none; }
+            .lang-btn.active {
+                background: var(--white);
+                color: var(--bg0);
+            }
+            .lang-btn:hover:not(.active) {
+                color: var(--white);
+                background: rgba(255,255,255,.05);
+            }
+
+        /* ── STATUS PILLS ── */
+        .status-row {
+            display: flex;
+            gap: .55rem;
+            flex-wrap: wrap;
+            font-size: .62rem;
+            letter-spacing: .06em;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            padding: 5px 12px;
+            border: 1px solid var(--line);
+            color: var(--t2);
+            background: var(--bg1);
+            font-family: var(--mono);
+            text-transform: uppercase;
+        }
+
+        .sp-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--t4);
+        }
+            .sp-dot.on {
+                background: var(--white);
+                animation: pulse-dot 2.4s infinite;
+            }
+
+        @keyframes pulse-dot {
+            0%,100% { opacity: 1; }
+            50% { opacity: .35; }
+        }
+
+        /* ── BIG TITLE BLOCK ── */
+        .titleblock {
+            text-align: center;
+            padding: .4rem 0 .2rem;
+        }
+
+        .ds-title {
+            font-size: clamp(1.6rem, 4.6vw, 3rem);
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: .04em;
+            display: inline-block;
+            position: relative;
+            line-height: 1.05;
+        }
+
+            .ds-title::after {
+                content: attr(data-text);
+                position: absolute;
+                inset: 0;
+                color: var(--white);
+                opacity: 0;
+                animation: glitchTitle 7s infinite;
+                clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+            }
+
+        @keyframes glitchTitle {
+            0%,90%,100% { opacity: 0; transform: translate(0); }
+            91% { opacity: .8; transform: translate(-3px,1px); clip-path: polygon(0 20%,100% 20%,100% 42%,0 42%); }
+            92% { opacity: .5; transform: translate(2px,-1px); clip-path: polygon(0 58%,100% 58%,100% 80%,0 80%); }
+            93% { opacity: 0; }
+        }
+
+        .ds-sub {
+            font-size: .72rem;
+            color: var(--t3);
+            letter-spacing: .14em;
+            margin-top: .55rem;
+        }
+            .ds-sub .br { color: var(--t4); margin: 0 .15em; }
+
+        .ds-badges {
+            display: flex;
+            gap: .45rem;
+            justify-content: center;
+            margin-top: .9rem;
+            flex-wrap: wrap;
+        }
+
+        .ds-badge {
+            font-family: var(--mono);
+            font-size: .6rem;
+            padding: 4px 11px;
+            border: 1px solid var(--line);
+            color: var(--t2);
+            background: var(--bg1);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CRYPTO ENGINE PANEL
+           ═══════════════════════════════════════════════════════════ */
+        .panel {
+            background: var(--bg1);
+            border: 1px solid var(--line);
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .55rem .9rem;
+            border-bottom: 1px solid var(--line-soft);
+            background: rgba(255,255,255,.015);
+        }
+
+        .panel-title {
+            font-size: .64rem;
+            color: var(--t1);
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+            .panel-title::before {
+                content: '//';
+                color: var(--t4);
+            }
+
+        .panel-dots {
+            display: flex;
+            gap: .45rem;
+        }
+        .panel-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+        }
+
+        .panel-body {
+            padding: 1.2rem;
+        }
+
+        /* ── TABS ── */
+        .ds-tabs {
+            display: flex;
+            margin-bottom: 1.1rem;
+            border: 1px solid var(--line);
+        }
+
+        .ds-tab {
+            flex: 1;
+            padding: .85rem .6rem;
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--line);
+            color: var(--t3);
+            font-family: var(--mono);
+            font-size: .74rem;
+            cursor: pointer;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            transition: all .18s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            position: relative;
+            overflow: hidden;
+        }
+            .ds-tab:last-child { border-right: none; }
+
+            .ds-tab::after {
+                content: '_';
+                opacity: 0;
+                color: var(--white);
+                animation: blink .9s infinite;
+            }
+
+            .ds-tab.active {
+                background: var(--bg3);
+                color: var(--white);
+                box-shadow: inset 0 -2px 0 var(--white);
+            }
+                .ds-tab.active::after { opacity: 1; }
+
+            .ds-tab:hover:not(.active) {
+                background: rgba(255,255,255,.03);
+                color: var(--t1);
+            }
+
+            .ds-tab svg {
+                width: 14px;
+                height: 14px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex-shrink: 0;
+            }
+
+        @keyframes blink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ── LABELS ── */
+        .ds-lbl {
+            font-size: .64rem;
+            color: var(--t3);
+            letter-spacing: .1em;
+            margin-bottom: .55rem;
+            display: block;
+            text-transform: uppercase;
+        }
+            .ds-lbl .prompt {
+                color: var(--t1);
+                margin-right: .35em;
+            }
+
+        /* ── TEXTAREA ── */
+        textarea {
+            width: 100%;
+            background: var(--bg0);
+            border: 1px solid var(--line);
+            color: var(--t1);
+            font-family: var(--mono);
+            font-size: .82rem;
+            line-height: 1.7;
+            padding: .9rem 1rem;
+            resize: vertical;
+            min-height: 120px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            border-radius: 0;
+        }
+            textarea:focus {
+                border-color: var(--white);
+                box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+            }
+            textarea::placeholder {
+                color: var(--t4);
+            }
+            textarea.out {
+                color: var(--white);
+                background: var(--bg2);
+                cursor: default;
+                word-break: break-all;
+            }
+
+        /* ── EXECUTE BUTTON ── */
+        .ds-btn {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--line);
+            background: var(--bg2);
+            color: var(--white);
+            font-family: var(--mono);
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: .9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            transition: all .18s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+        }
+            .ds-btn::before {
+                content: '> ';
+                color: var(--t3);
+            }
+            .ds-btn::after {
+                content: '_';
+                animation: blink .9s infinite;
+                margin-left: .1em;
+            }
+            .ds-btn:hover {
+                background: var(--white);
+                color: var(--bg0);
+                border-color: var(--white);
+            }
+            .ds-btn:hover::before,
+            .ds-btn:hover::after { color: var(--bg0); }
+            .ds-btn:active { transform: scale(.995); }
+
+            .ds-btn svg {
+                width: 15px;
+                height: 15px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* hatched corner accent on exec button */
+        .ds-btn .hatch {
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 26px;
+            background: repeating-linear-gradient(45deg, var(--line-soft) 0, var(--line-soft) 2px, transparent 2px, transparent 5px);
+            pointer-events: none;
+        }
+        .ds-btn:hover .hatch { opacity: 0; }
+
+        /* ── ERROR ── */
+        .err {
+            display: none;
+            border: 1px solid var(--line);
+            background: var(--bg2);
+            padding: .65rem 1rem;
+            margin-top: .8rem;
+            font-size: .72rem;
+            color: var(--white);
+            letter-spacing: .04em;
+            font-family: var(--mono);
+        }
+            .err::before {
+                content: '[!] ';
+                color: var(--white);
+                font-weight: 700;
+            }
+
+        /* ── RESULT ── */
+        .res {
+            display: none;
+            margin-top: 1rem;
+            animation: fadeUp .3s ease both;
+        }
+
+        .res-divider {
+            height: 1px;
+            background: var(--line-soft);
+            margin: .9rem 0;
+            position: relative;
+        }
+            .res-divider::after {
+                content: '── OUTPUT ──';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+                font-size: .55rem;
+                color: var(--t3);
+                letter-spacing: .15em;
+                background: var(--bg1);
+                padding: 0 .5rem;
+                white-space: nowrap;
+            }
+
+        .res-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .55rem;
+        }
+
+        .res-lbl {
+            font-size: .62rem;
+            color: var(--t3);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .cpybtn {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            padding: 5px 12px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--t2);
+            font-family: var(--mono);
+            font-size: .62rem;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: all .18s;
+            border-radius: 0;
+            text-transform: uppercase;
+        }
+            .cpybtn:hover {
+                background: var(--white);
+                border-color: var(--white);
+                color: var(--bg0);
+            }
+            .cpybtn.ok {
+                color: var(--white);
+                border-color: var(--white);
+                background: var(--bg3);
+            }
+            .cpybtn svg {
+                width: 11px;
+                height: 11px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .chips {
+            display: flex;
+            gap: .45rem;
+            margin-top: .65rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            font-family: var(--mono);
+            font-size: .58rem;
+            padding: 3px 9px;
+            border: 1px solid var(--line-soft);
+            color: var(--t3);
+            background: var(--bg2);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SYSTEM LOG (history) — OS log styling
+           ═══════════════════════════════════════════════════════════ */
+        .syslog-static {
+            font-size: .68rem;
+            line-height: 1.85;
+            color: var(--t2);
+        }
+
+        .log-line {
+            display: grid;
+            grid-template-columns: 86px 92px 1fr;
+            gap: .4rem;
+            white-space: nowrap;
+        }
+            .log-line .lt { color: var(--t4); }
+            .log-line .lc { color: var(--t3); }
+            .log-line .lm { color: var(--t1); overflow: hidden; text-overflow: ellipsis; }
+
+        .log-divider {
+            height: 1px;
+            background: var(--line-faint);
+            margin: .6rem 0;
+        }
+
+        .hist-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .7rem;
+        }
+
+        .hist-title {
+            font-size: .62rem;
+            color: var(--t3);
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+            .hist-title::before {
+                content: '▸';
+                color: var(--t2);
+                font-size: .55rem;
+            }
+
+        .clr-btn {
+            padding: 4px 12px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--t3);
+            font-family: var(--mono);
+            font-size: .6rem;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: all .18s;
+            border-radius: 0;
+            text-transform: uppercase;
+        }
+            .clr-btn:hover {
+                background: var(--white);
+                border-color: var(--white);
+                color: var(--bg0);
+            }
+
+        .hi {
+            background: rgba(255,255,255,.012);
+            border: 1px solid var(--line-soft);
+            padding: .55rem .8rem;
+            margin-bottom: .45rem;
+            display: flex;
+            gap: .7rem;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: all .18s;
+            font-family: var(--mono);
+            position: relative;
+        }
+            .hi::before {
+                content: '';
+                position: absolute;
+                left: 0; top: 0; bottom: 0;
+                width: 2px;
+                background: transparent;
+                transition: background .2s;
+            }
+            .hi:hover {
+                background: rgba(255,255,255,.04);
+                border-color: var(--line);
+            }
+                .hi:hover::before { background: var(--white); }
+
+        .hb {
+            font-size: .55rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            letter-spacing: .08em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--line);
+            color: var(--t1);
+            background: var(--bg2);
+        }
+            .hb.e { color: var(--white); border-color: var(--line); }
+            .hb.d { color: var(--t1); border-color: var(--line); }
+
+        .ht { flex: 1; min-width: 0; }
+
+        .hp {
+            font-size: .72rem;
+            color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hc {
+            font-size: .62rem;
+            color: var(--t3);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .htime {
+            font-size: .6rem;
+            color: var(--t3);
+            white-space: nowrap;
+            flex-shrink: 0;
+            opacity: .85;
+        }
+            .htime::before { content: '['; color: var(--t4); }
+            .htime::after  { content: ']'; color: var(--t4); }
+
+        .empty {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .4rem .2rem;
+            color: var(--t3);
+            font-size: .68rem;
+            letter-spacing: .04em;
+        }
+            .empty svg {
+                opacity: .35;
+                width: 16px;
+                height: 16px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex-shrink: 0;
+            }
+
+        .log-caret {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--t2);
+            vertical-align: middle;
+            animation: blink .9s infinite;
+            margin-top: .4rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RIGHT — TICKER / NETWORK FEED / NOTES
+           ═══════════════════════════════════════════════════════════ */
+        .watchbox {
+            text-align: right;
+            font-size: .72rem;
+            letter-spacing: .1em;
+            color: var(--t1);
+            line-height: 1.6;
+            min-height: 2.6em;
+            text-transform: uppercase;
+        }
+            .watchbox .wb-cursor {
+                color: var(--t2);
+                animation: blink .9s infinite;
+            }
+
+        .feed {
+            font-size: .6rem;
+            line-height: 1.95;
+        }
+
+        .feed-line {
+            display: grid;
+            grid-template-columns: 66px 1fr 22px;
+            gap: .4rem;
+            align-items: baseline;
+        }
+            .feed-line .ft { color: var(--t4); }
+            .feed-line .fm { color: var(--t2); white-space: normal; }
+            .feed-line .fs {
+                color: var(--t1);
+                text-align: right;
+                letter-spacing: .05em;
+            }
+            .feed-line .fs.dim { color: var(--t4); }
+
+        .sparkline {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 38px;
+            margin-top: .7rem;
+            border-top: 1px solid var(--line-faint);
+            padding-top: .4rem;
+        }
+            .sparkline i {
+                flex: 1;
+                background: var(--t3);
+                min-height: 2px;
+                transition: height .9s ease;
+            }
+
+        .notes-body {
+            font-size: .72rem;
+            line-height: 1.8;
+            color: var(--t1);
+        }
+            .notes-body .nl { color: var(--t2); }
+
+        .monogram {
+            font-family: var(--mono);
+            font-size: 6px;
+            line-height: 6px;
+            color: var(--t3);
+            white-space: pre;
+            display: block;
+            text-align: center;
+            margin: .8rem 0 0;
+            opacity: .6;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .col-left  > * { animation: fadeUp .5s ease both; }
+        .col-right > * { animation: fadeUp .5s ease both; }
+        .col-center > * { animation: fadeUp .5s ease both; }
+        .col-center > *:nth-child(2){ animation-delay:.05s; }
+        .col-center > *:nth-child(3){ animation-delay:.1s; }
+        .col-center > *:nth-child(4){ animation-delay:.15s; }
+        .col-center > *:nth-child(5){ animation-delay:.2s; }
+        .col-center > *:nth-child(6){ animation-delay:.25s; }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 1180px) {
+            .os-grid {
+                grid-template-columns: 220px 1fr;
+                overflow-y: auto;
+            }
+            .col { overflow: visible; }
+            .col-right {
+                grid-column: 1 / -1;
+                border-left: none;
+                border-top: 1px solid var(--line);
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+                .col-right > * { flex: 1 1 280px; }
+                .watchbox { flex-basis: 100%; text-align: left; }
+        }
+
+        @media (max-width: 820px) {
+            .os-grid {
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .col { overflow: visible; }
+            .col-center { order: 1; }
+            .col-center > #sec-log { flex: none; }
+            #sec-log .panel-body { overflow: visible; }
+            #sec-log .log-scroll { overflow-y: visible; }
+            .col-left  { order: 2; border-right: none; border-top: 1px solid var(--line); }
+            .col-right { order: 3; flex-direction: column; }
+                .col-right > * { flex: none; }
+            .center-head { gap: .7rem; }
+            .ds-title { letter-spacing: .02em; }
+            .os-tb-right { gap: .55rem; flex-wrap: wrap; justify-content: flex-end; }
+        }
+
+        @media (max-width: 520px) {
+            .os-titlebar { font-size: .6rem; }
+            .os-tb-right { gap: .5rem; }
+            .col, .col-center { padding: .85rem; }
+            .panel-body { padding: .9rem; }
+            .ds-tab { font-size: .66rem; padding: .75rem .4rem; }
+            .log-line { grid-template-columns: 70px 78px 1fr; font-size: .6rem; }
+            .ds-sub { font-size: .64rem; }
+            .os-footer { font-size: .54rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .001ms !important;
+            }
+            .log-caret, .ds-tab::after, .ds-btn::after, .wb-cursor { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Boot Screen -->
+    <div id="boot-screen">
+        <div id="boot-inner">
+            <div id="boot-logo">DEDSEC<span>://</span>BOOT_SEQUENCE</div>
+            <div id="boot-lines"></div>
+            <div class="boot-bar"><div class="boot-bar-fill" id="boot-bar-fill"></div></div>
+            <div id="boot-granted" class="boot-granted" style="display:none"></div>
+        </div>
+    </div>
+
+    <div class="ambient"></div>
+
+    <!-- ════════ OS WINDOW ════════ -->
+    <div class="os-window" id="main-wrap">
+
+        <!-- Animated background (fills gaps) -->
+        <div class="bg-anim" aria-hidden="true"></div>
+
+        <!-- Top bar (sin marco de ventana) -->
+        <div class="os-titlebar">
+            <div class="os-tb-left">
+                <span class="pipe">&#9760;</span>
+                <span class="tb-path">DEDSEC://CRYPTO_NODE</span>
+            </div>
+            <div class="os-tb-right">
+                <span>DEDSEC TOOLKIT</span>
+                <button class="tb-btn" onclick="location.href='index.html'" title="Volver al menú">
+                    <span>&#9664;</span><span data-i18n="back_menu">MENÚ</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body: grid -->
+        <div class="os-body">
+
+        <!-- Main grid -->
+        <div class="os-grid">
+
+            <!-- ───────── LEFT COLUMN ───────── -->
+            <div class="col col-left" id="sec-node">
+
+                <div class="brand">
+                    <div class="brand-media" id="brand-media"><img id="brand-img" class="media-img" alt="" /><pre class="skull">        
+</pre></div>
+                    
+                    <div class="brand-sub">&#9760; // EXPECT US &#9760;</div>
+                </div>
+
+                <div class="hud">
+                    <div class="hud-head">
+                        <span class="hud-title" data-i18n="hud_node">NODE_STATUS</span>
+                        <span class="hud-tag">[+]</span>
+                    </div>
+                    <div class="hud-body">
+                        <div class="kv">
+                            <span class="k">NODE ID</span><span class="v">DEDSEC-8F3A</span>
+                            <span class="k">USER</span><span class="v">GUEST</span>
+                            <span class="k" data-i18n="kv_clear">CLEARANCE</span><span class="v" data-i18n="kv_clear_v">UNRESTRICTED</span>
+                            <span class="k">NETWORK</span><span class="v dim" data-i18n="kv_offline">OFFLINE</span>
+                            <span class="k">VPN TUNNEL</span><span class="v dim">DOWN</span>
+                            <span class="k">TOR RELAY</span><span class="v dim">N/A</span>
+                            <span class="k">FAILSAFE</span><span class="v" data-i18n="kv_active">ACTIVE</span>
+                            <span class="k">UPTIME</span><span class="v" id="uptime-val">00:00:00</span>
+                        </div>
+                        <div class="worldmap" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="hud">
+                    <div class="hud-head">
+                        <span class="hud-title" data-i18n="hud_metrics">SYSTEM_METRICS</span>
+                        <span class="hud-tag">[+]</span>
+                    </div>
+                    <div class="hud-body">
+                        <div class="metric">
+                            <span class="m-label">CPU</span><span class="m-val" id="cpu-val">14%</span>
+                            <span class="m-bar"><span class="m-fill" id="cpu-bar" style="width:14%"></span></span>
+                        </div>
+                        <div class="metric">
+                            <span class="m-label">RAM</span><span class="m-val" id="ram-val">21%</span>
+                            <span class="m-bar"><span class="m-fill" id="ram-bar" style="width:21%"></span></span>
+                        </div>
+                        <div class="metric">
+                            <span class="m-label">DISK</span><span class="m-val" id="disk-val">18%</span>
+                            <span class="m-bar"><span class="m-fill" id="disk-bar" style="width:18%"></span></span>
+                        </div>
+                        <div class="metric">
+                            <span class="m-label">TEMP</span><span class="m-val" id="temp-val">39&deg;C</span>
+                            <span class="m-bar"><span class="m-fill" id="temp-bar" style="width:39%"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud">
+                    <div class="hud-head">
+                        <span class="hud-title" data-i18n="hud_modules">ACTIVE_MODULES</span>
+                        <span class="hud-tag">[+]</span>
+                    </div>
+                    <div class="hud-body">
+                        <div class="module"><span class="mod-name">crypto_core</span><span class="mod-ver">v2.7.1</span><span class="mod-ok">OK</span></div>
+                        <div class="module"><span class="mod-name">aes_engine</span><span class="mod-ver">v1.9.4</span><span class="mod-ok">OK</span></div>
+                        <div class="module"><span class="mod-name">pkcs7_handler</span><span class="mod-ver">v1.3.2</span><span class="mod-ok">OK</span></div>
+                        <div class="module"><span class="mod-name">base64_codec</span><span class="mod-ver">v1.2.0</span><span class="mod-ok">OK</span></div>
+                        <div class="module"><span class="mod-name">dedsec_bridge</span><span class="mod-ver">v1.0.0</span><span class="mod-ok">OK</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ───────── CENTER COLUMN ───────── -->
+            <div class="col col-center">
+
+                <!-- Header -->
+                <div class="center-head">
+                    <div class="ch-left">
+                        <svg class="ch-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                        <div class="ch-id">
+                            <strong>DEDSEC_NODE</strong>
+                            <span data-i18n="node_mode">v2.04.7 - MODO OFFLINE</span>
+                        </div>
+                    </div>
+                    <div class="ch-right">
+                        <div id="live-clock">--:--:--</div>
+                        <div class="lang-toggle">
+                            <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+                            <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Pills -->
+                <div class="status-row">
+                    <div class="status-pill"><span class="sp-dot on"></span><span data-i18n="status_online">ESTADO: ONLINE</span></div>
+                    <div class="status-pill"><span class="sp-dot on"></span>AES-256-ECB</div>
+                    <div class="status-pill"><span class="sp-dot on"></span>PKCS7 - BASE64</div>
+                    <div class="status-pill"><span class="sp-dot on"></span><span data-i18n="status_offline">MODO: OFFLINE</span></div>
+                    <div class="status-pill"><span class="sp-dot on"></span>DEDSEC COMPAT</div>
+                </div>
+
+                <!-- Big Title -->
+                <div class="titleblock">
+                    <div class="ds-title" data-text="DEDSEC://CRYPTO_NODE">DEDSEC://CRYPTO_NODE</div>
+                    <p class="ds-sub"><span class="br">[</span><span data-i18n="security">SEGURIDAD: AES-256</span><span class="br">]</span> <span class="br">[</span><span data-i18n="mode">MODO: ECB</span><span class="br">]</span></p>
+                    <div class="ds-badges">
+                        <span class="ds-badge">AES-256</span>
+                        <span class="ds-badge">ECB MODE</span>
+                        <span class="ds-badge">PKCS7</span>
+                        <span class="ds-badge">BASE64</span>
+                        <span class="ds-badge" data-i18n="offline_badge">100% OFFLINE</span>
+                    </div>
+                </div>
+
+                <!-- Crypto Panel -->
+                <div class="panel" id="sec-crypto">
+                    <div class="panel-header">
+                        <span class="panel-title" data-i18n="panel_crypto">CRYPTO_ENGINE</span>
+                        <div class="panel-dots"><div class="panel-dot"></div><div class="panel-dot"></div><div class="panel-dot"></div></div>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="ds-tabs">
+                            <button class="ds-tab active" id="te" onclick="setMode('e')">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                <span data-i18n="tab_encrypt">ENCRYPT_PAYLOAD</span>
+                            </button>
+                            <button class="ds-tab" id="td" onclick="setMode('d')">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 5-5" /><line x1="14" y1="3" x2="20" y2="3" /><line x1="20" y1="3" x2="20" y2="9" /></svg>
+                                <span data-i18n="tab_decrypt">DECRYPT_PAYLOAD</span>
+                            </button>
+                        </div>
+
+                        <label class="ds-lbl" id="ilbl"><span class="prompt">$</span><span data-i18n="input_label">TEXTO PLANO</span></label>
+                        <textarea id="inp" data-placeholder-e data-placeholder-d></textarea>
+
+                        <button class="ds-btn" onclick="run()">
+                            <svg id="bico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                            <span id="btxt" data-i18n="btn_encrypt">EXECUTE_ENCRYPTION</span>
+                            <span class="hatch"></span>
+                        </button>
+
+                        <div class="err" id="err"></div>
+
+                        <div class="res" id="res">
+                            <div class="res-divider"></div>
+                            <div class="res-hd">
+                                <span class="res-lbl" id="rlbl" data-i18n="result_encrypt">OUTPUT // CIFRADO BASE64</span>
+                                <button class="cpybtn" id="cpb" onclick="doCopy()">
+                                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                                    <span data-i18n="copy">COPY</span>
+                                </button>
+                            </div>
+                            <textarea class="out" id="out" readonly rows="3"></textarea>
+                            <div class="chips" id="chips"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- System Log Panel -->
+                <div class="panel" id="sec-log">
+                    <div class="panel-header">
+                        <span class="panel-title" data-i18n="panel_log">SYSTEM_LOG</span>
+                        <div class="panel-dots"><div class="panel-dot"></div><div class="panel-dot"></div></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="hist-hd">
+                            <span class="hist-title" data-i18n="history">HISTORIAL DE OPERACIONES</span>
+                            <button class="clr-btn" onclick="clearHist()" data-i18n="clear">PURGE_LOG</button>
+                        </div>
+
+                        <div class="log-scroll">
+                            <!-- Static boot log (visual) -->
+                            <div class="syslog-static" id="boot-log"></div>
+                            <div class="log-divider"></div>
+
+                            <!-- Live operation log -->
+                            <div id="hlist">
+                                <div class="empty">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>
+                                    <span data-i18n="no_ops">// NO OPERATIONS LOGGED</span>
+                                </div>
+                            </div>
+                            <span class="log-caret" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ───────── RIGHT COLUMN ───────── -->
+            <div class="col col-right" id="sec-net">
+
+                <div class="watchbox" id="ticker">WE ARE WATCHING<br>THE WATCHERS <span class="wb-cursor">_</span></div>
+
+                <div class="hud">
+                    <div class="hud-head">
+                        <span class="hud-title" data-i18n="hud_feed">NETWORK_FEED</span>
+                        <span class="hud-tag">[+]</span>
+                    </div>
+                    <div class="hud-body">
+                        <div class="feed" id="net-feed">
+                            <div class="feed-line"><span class="ft">[13:46:58]</span><span class="fm" data-i18n="feed_scan">SCANNING LOCAL INTERFACES...</span><span class="fs">OK</span></div>
+                            <div class="feed-line"><span class="ft">[13:46:59]</span><span class="fm" data-i18n="feed_noconn">NO NETWORK CONNECTION</span><span class="fs dim">--</span></div>
+                            <div class="feed-line"><span class="ft">[13:47:00]</span><span class="fm" data-i18n="feed_tor">TOR SERVICE UNREACHABLE</span><span class="fs dim">--</span></div>
+                            <div class="feed-line"><span class="ft">[13:47:01]</span><span class="fm" data-i18n="feed_vpn">VPN SERVICE DISABLED</span><span class="fs dim">--</span></div>
+                            <div class="feed-line"><span class="ft">[13:47:02]</span><span class="fm" data-i18n="feed_block">ALL CONNECTIONS BLOCKED</span><span class="fs dim">--</span></div>
+                            <div class="feed-line"><span class="ft">[13:47:03]</span><span class="fm" data-i18n="feed_iso">DEVICE ISOLATION ACTIVE</span><span class="fs">OK</span></div>
+                        </div>
+                        <div class="sparkline" id="sparkline" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="hud">
+                    <div class="hud-head">
+                        <span class="hud-title" data-i18n="hud_notes">NOTES</span>
+                        <span class="hud-tag">[+]</span>
+                    </div>
+                    <div class="hud-body">
+                        <div class="notes-body">
+                            <div class="nl" data-i18n="note1">DedSec no olvida.</div>
+                            <div class="nl" data-i18n="note2">La informaci&oacute;n es libre.</div>
+                            <div class="nl" data-i18n="note3">El conocimiento es poder.</div>
+                        </div>
+                        <div class="notes-media" id="notes-media"><img id="notes-img" class="media-img" alt="" /><pre class="monogram" aria-hidden="true">     .:=+*###*+=:.
+</pre></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div><!-- /os-grid -->
+
+        </div><!-- /os-body -->
+
+        <!-- Bottom status bar -->
+        <div class="os-footer">
+            <div class="ft-left" id="ft-ticker" data-i18n="footer_motto">// PRIVACY IS A RIGHT - INFORMATION WANTS TO BE FREE</div>
+            <div class="ft-right">
+                <span class="ft-brand">&#9760; DEDSEC &#9760;</span>
+                <span>EXPECT_US.exe</span>
+                <span class="signal"><i></i><i></i><i></i><i></i></span>
+            </div>
+        </div>
+
+    </div><!-- /os-window -->
+
+    <script>
+        /* ═══════════════════════════════════════════════════════════
+           i18n
+           ═══════════════════════════════════════════════════════════ */
+        var LANG = 'es';
+        var I18N = {
+            es: {
+                back_menu: 'MENÚ',
+                status_online: 'ESTADO: ONLINE',
+                status_offline: 'MODO: OFFLINE',
+                security: 'SEGURIDAD: AES-256',
+                mode: 'MODO: ECB',
+                offline_badge: '100% OFFLINE',
+                panel_crypto: 'CRYPTO_ENGINE',
+                panel_log: 'SYSTEM_LOG',
+                tab_encrypt: 'ENCRYPT_PAYLOAD',
+                tab_decrypt: 'DECRYPT_PAYLOAD',
+                input_label: 'TEXTO PLANO',
+                input_label_d: 'BASE64 CIFRADO',
+                btn_encrypt: 'EXECUTE_ENCRYPTION',
+                btn_decrypt: 'EXECUTE_DECRYPTION',
+                result_encrypt: 'OUTPUT // CIFRADO BASE64',
+                result_decrypt: 'OUTPUT // TEXTO DESCIFRADO',
+                copy: 'COPIAR',
+                copied: 'COPIADO',
+                history: 'HISTORIAL DE OPERACIONES',
+                clear: 'PURGE_LOG',
+                no_ops: '// SIN OPERACIONES REGISTRADAS',
+                footer: 'Implementación pura JS · Sin dependencias externas',
+                err_empty_e: 'Ingresa texto para cifrar.',
+                err_empty_d: 'Pega un Base64 para descifrar.',
+                placeholder_e: 'Ingresa el texto a cifrar...',
+                placeholder_d: 'Pega aquí el Base64 a descifrar...',
+                hist_loaded: 'CARGADO DEL LOG',
+                op_encrypt: 'PAYLOAD ENCRYPTED',
+                op_decrypt: 'PAYLOAD DECRYPTED',
+                op_copy: 'DATA COPIED TO CLIPBOARD',
+                node_mode: 'v2.04.7 - MODO OFFLINE',
+                hud_node: 'NODE_STATUS',
+                hud_metrics: 'SYSTEM_METRICS',
+                hud_modules: 'ACTIVE_MODULES',
+                hud_feed: 'NETWORK_FEED',
+                hud_notes: 'NOTAS',
+                kv_clear: 'PERMISO',
+                kv_clear_v: 'SIN RESTRICCIÓN',
+                kv_offline: 'OFFLINE',
+                kv_active: 'ACTIVO',
+                feed_scan: 'ESCANEANDO INTERFACES LOCALES...',
+                feed_noconn: 'SIN CONEXIÓN DE RED',
+                feed_tor: 'SERVICIO TOR INACCESIBLE',
+                feed_vpn: 'SERVICIO VPN DESACTIVADO',
+                feed_block: 'TODAS LAS CONEXIONES BLOQUEADAS',
+                feed_iso: 'AISLAMIENTO DE DISPOSITIVO ACTIVO',
+                note1: 'DedSec no olvida.',
+                note2: 'La información es libre.',
+                note3: 'El conocimiento es poder.',
+                footer_motto: '// LA PRIVACIDAD ES UN DERECHO - LA INFORMACIÓN QUIERE SER LIBRE'
+            },
+            en: {
+                back_menu: 'MENU',
+                status_online: 'STATUS: ONLINE',
+                status_offline: 'MODE: OFFLINE',
+                security: 'SECURITY: AES-256',
+                mode: 'MODE: ECB',
+                offline_badge: '100% OFFLINE',
+                panel_crypto: 'CRYPTO_ENGINE',
+                panel_log: 'SYSTEM_LOG',
+                tab_encrypt: 'ENCRYPT_PAYLOAD',
+                tab_decrypt: 'DECRYPT_PAYLOAD',
+                input_label: 'PLAINTEXT',
+                input_label_d: 'ENCRYPTED BASE64',
+                btn_encrypt: 'EXECUTE_ENCRYPTION',
+                btn_decrypt: 'EXECUTE_DECRYPTION',
+                result_encrypt: 'OUTPUT // ENCRYPTED BASE64',
+                result_decrypt: 'OUTPUT // DECRYPTED TEXT',
+                copy: 'COPY',
+                copied: 'COPIED',
+                history: 'OPERATION LOG',
+                clear: 'PURGE_LOG',
+                no_ops: '// NO OPERATIONS LOGGED',
+                footer: 'Pure JS implementation · No external dependencies',
+                err_empty_e: 'Enter text to encrypt.',
+                err_empty_d: 'Paste a Base64 string to decrypt.',
+                placeholder_e: 'Enter text to encrypt...',
+                placeholder_d: 'Paste Base64 to decrypt here...',
+                hist_loaded: 'LOADED FROM LOG',
+                op_encrypt: 'PAYLOAD ENCRYPTED',
+                op_decrypt: 'PAYLOAD DECRYPTED',
+                op_copy: 'DATA COPIED TO CLIPBOARD',
+                node_mode: 'v2.04.7 - OFFLINE MODE',
+                hud_node: 'NODE_STATUS',
+                hud_metrics: 'SYSTEM_METRICS',
+                hud_modules: 'ACTIVE_MODULES',
+                hud_feed: 'NETWORK_FEED',
+                hud_notes: 'NOTES',
+                kv_clear: 'CLEARANCE',
+                kv_clear_v: 'UNRESTRICTED',
+                kv_offline: 'OFFLINE',
+                kv_active: 'ACTIVE',
+                feed_scan: 'SCANNING LOCAL INTERFACES...',
+                feed_noconn: 'NO NETWORK CONNECTION',
+                feed_tor: 'TOR SERVICE UNREACHABLE',
+                feed_vpn: 'VPN SERVICE DISABLED',
+                feed_block: 'ALL CONNECTIONS BLOCKED',
+                feed_iso: 'DEVICE ISOLATION ACTIVE',
+                note1: 'DedSec never forgets.',
+                note2: 'Information is free.',
+                note3: 'Knowledge is power.',
+                footer_motto: '// PRIVACY IS A RIGHT - INFORMATION WANTS TO BE FREE'
+            }
+        };
+
+        function t(key) { return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+        function setLang(l) {
+            LANG = l;
+            document.documentElement.lang = l;
+            document.getElementById('btn-es').className = 'lang-btn' + (l === 'es' ? ' active' : '');
+            document.getElementById('btn-en').className = 'lang-btn' + (l === 'en' ? ' active' : '');
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+            // Update mode-dependent UI
+            var m = mode;
+            document.getElementById('ilbl').innerHTML = '<span class="prompt">$ </span>' + (m === 'e' ? t('input_label') : t('input_label_d'));
+            document.getElementById('inp').placeholder = m === 'e' ? t('placeholder_e') : t('placeholder_d');
+            document.getElementById('btxt').textContent = m === 'e' ? t('btn_encrypt') : t('btn_decrypt');
+            renderHist();
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CLOCK
+           ═══════════════════════════════════════════════════════════ */
+        function updateClock() {
+            var d = new Date();
+            var hh = d.getHours().toString().padStart(2, '0');
+            var mm = d.getMinutes().toString().padStart(2, '0');
+            var ss = d.getSeconds().toString().padStart(2, '0');
+            document.getElementById('live-clock').textContent = hh + ':' + mm + ':' + ss;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        /* ═══════════════════════════════════════════════════════════
+           BOOT SEQUENCE
+           ═══════════════════════════════════════════════════════════ */
+        (function () {
+            var lines = [
+                { ok: '[OK]', txt: 'LOADING AES ENGINE' },
+                { ok: '[OK]', txt: 'INITIALIZING SECURE CHANNEL' },
+                { ok: '[OK]', txt: 'LOADING CRYPTOGRAPHIC MODULES' },
+                { ok: '[OK]', txt: 'MD5 KEY DERIVATION READY' },
+                { ok: '[OK]', txt: 'DEDSEC COMPATIBILITY LAYER ACTIVE' },
+                { ok: '[OK]', txt: 'OFFLINE MODE ENABLED' }
+            ];
+            var container = document.getElementById('boot-lines');
+            var bar = document.getElementById('boot-bar-fill');
+            var granted = document.getElementById('boot-granted');
+            var totalDelay = 0;
+
+            function addLine(line, delay, idx) {
+                setTimeout(function () {
+                    var div = document.createElement('div');
+                    div.className = 'boot-line';
+                    div.innerHTML = '<span class="bl-ok">' + line.ok + '</span><span class="bl-txt">' + line.txt + '</span>';
+                    container.appendChild(div);
+                    bar.style.width = ((idx + 1) / lines.length * 100) + '%';
+                }, delay);
+            }
+
+            lines.forEach(function (line, idx) {
+                totalDelay += 280 + Math.random() * 120;
+                addLine(line, totalDelay, idx);
+            });
+
+            setTimeout(function () {
+                granted.textContent = 'ACCESS GRANTED';
+                granted.style.display = 'block';
+            }, totalDelay + 350);
+
+            setTimeout(function () {
+                var boot = document.getElementById('boot-screen');
+                boot.style.transition = 'opacity .7s ease';
+                boot.style.opacity = '0';
+                document.getElementById('main-wrap').style.opacity = '1';
+                setTimeout(function () { boot.style.display = 'none'; }, 700);
+            }, totalDelay + 900);
+        })();
+
+        /* ═══════════════════════════════════════════════════════════
+           SYSTEM LOG — static boot lines (visual)
+           ═══════════════════════════════════════════════════════════ */
+        (function () {
+            var entries = [
+                ['BOOT', 'DEDSEC NODE INITIALIZED'],
+                ['SYSTEM', 'CORE SYSTEMS ONLINE'],
+                ['CRYPTO', 'AES-256 ENGINE LOADED'],
+                ['MODULE', 'PKCS7 PADDING ENABLED'],
+                ['MODULE', 'BASE64 ENCODER READY'],
+                ['SECURITY', 'OFFLINE MODE VERIFIED'],
+                ['DEDSEC', 'DEDSEC COMPATIBILITY ENABLED'],
+                ['STATUS', 'AWAITING USER INPUT']
+            ];
+            var base = new Date();
+            base.setSeconds(base.getSeconds() - entries.length);
+            var html = entries.map(function (e, idx) {
+                var d = new Date(base.getTime() + idx * 1000);
+                var ts = '[' + d.getHours().toString().padStart(2, '0') + ':' +
+                    d.getMinutes().toString().padStart(2, '0') + ':' +
+                    d.getSeconds().toString().padStart(2, '0') + ']';
+                return '<div class="log-line"><span class="lt">' + ts + '</span><span class="lc">[' + e[0] + ']</span><span class="lm">' + e[1] + '</span></div>';
+            }).join('');
+            document.getElementById('boot-log').innerHTML = html;
+        })();
+
+        /* ═══════════════════════════════════════════════════════════
+           VISUAL TELEMETRY (non-functional ambience)
+           ═══════════════════════════════════════════════════════════ */
+        (function () {
+            var up = 17 * 60 + 42;
+            function tickUptime() {
+                up++;
+                var h = Math.floor(up / 3600);
+                var m = Math.floor((up % 3600) / 60);
+                var s = up % 60;
+                var el = document.getElementById('uptime-val');
+                if (el) el.textContent = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+            }
+            tickUptime();
+            setInterval(tickUptime, 1000);
+
+            var metrics = {
+                cpu: { v: 14, min: 6, max: 38, el: 'cpu', unit: '%' },
+                ram: { v: 21, min: 18, max: 46, el: 'ram', unit: '%' },
+                disk: { v: 18, min: 18, max: 22, el: 'disk', unit: '%' },
+                temp: { v: 39, min: 35, max: 48, el: 'temp', unit: '\u00B0C' }
+            };
+            function nudge() {
+                Object.keys(metrics).forEach(function (k) {
+                    var m = metrics[k];
+                    m.v += Math.round((Math.random() - 0.5) * 6);
+                    if (m.v < m.min) m.v = m.min;
+                    if (m.v > m.max) m.v = m.max;
+                    var valEl = document.getElementById(m.el + '-val');
+                    var barEl = document.getElementById(m.el + '-bar');
+                    if (valEl) valEl.textContent = m.v + m.unit;
+                    if (barEl) barEl.style.width = Math.min(100, m.v) + '%';
+                });
+            }
+            setInterval(nudge, 2200);
+
+            var spark = document.getElementById('sparkline');
+            if (spark) {
+                var bars = 28;
+                for (var i = 0; i < bars; i++) {
+                    var b = document.createElement('i');
+                    b.style.height = (10 + Math.random() * 80) + '%';
+                    spark.appendChild(b);
+                }
+                setInterval(function () {
+                    Array.prototype.forEach.call(spark.children, function (b) {
+                        b.style.height = (10 + Math.random() * 80) + '%';
+                    });
+                }, 1400);
+            }
+
+            var msgs = [
+                'WE ARE WATCHING<br>THE WATCHERS',
+                'PRIVACY<br>IS A RIGHT',
+                'INFORMATION<br>WANTS TO BE FREE',
+                'EXPECT_US.EXE'
+            ];
+            var ti = 0;
+            var ticker = document.getElementById('ticker');
+            setInterval(function () {
+                ti = (ti + 1) % msgs.length;
+                if (ticker) ticker.innerHTML = msgs[ti] + ' <span class="wb-cursor">_</span>';
+            }, 4200);
+        })();
+
+        /* ═══════════════════════════════════════════════════════════
+           AES-256 ECB puro en JavaScript
+           ═══════════════════════════════════════════════════════════ */
+        var S = [99, 124, 119, 123, 242, 107, 111, 197, 48, 1, 103, 43, 254, 215, 171, 118, 202, 130, 201, 125, 250, 89, 71, 240, 173, 212, 162, 175, 156, 164, 114, 192, 183, 253, 147, 38, 54, 63, 247, 204, 52, 165, 229, 241, 113, 216, 49, 21, 4, 199, 35, 195, 24, 150, 5, 154, 7, 18, 128, 226, 235, 39, 178, 117, 9, 131, 44, 26, 27, 110, 90, 160, 82, 59, 214, 179, 41, 227, 47, 132, 83, 209, 0, 237, 32, 252, 177, 91, 106, 203, 190, 57, 74, 76, 88, 207, 208, 239, 170, 251, 67, 77, 51, 133, 69, 249, 2, 127, 80, 60, 159, 168, 81, 163, 64, 143, 146, 157, 56, 245, 188, 182, 218, 33, 16, 255, 243, 210, 205, 12, 19, 236, 95, 151, 68, 23, 196, 167, 126, 61, 100, 93, 25, 115, 96, 129, 79, 220, 34, 42, 144, 136, 70, 238, 184, 20, 222, 94, 11, 219, 224, 50, 58, 10, 73, 6, 36, 92, 194, 211, 172, 98, 145, 149, 228, 121, 231, 200, 55, 109, 141, 213, 78, 169, 108, 86, 244, 234, 101, 122, 174, 8, 186, 120, 37, 46, 28, 166, 180, 198, 232, 221, 116, 31, 75, 189, 139, 138, 112, 62, 181, 102, 72, 3, 246, 14, 97, 53, 87, 185, 134, 193, 29, 158, 225, 248, 152, 17, 105, 217, 142, 148, 155, 30, 135, 233, 206, 85, 40, 223, 140, 161, 137, 13, 191, 230, 66, 104, 65, 153, 45, 15, 176, 84, 187, 22];
+        var Si = [82, 9, 106, 213, 48, 54, 165, 56, 191, 64, 163, 158, 129, 243, 215, 251, 124, 227, 57, 130, 155, 47, 255, 135, 52, 142, 67, 68, 196, 222, 233, 203, 84, 123, 148, 50, 166, 194, 35, 61, 238, 76, 149, 11, 66, 250, 195, 78, 8, 46, 161, 102, 40, 217, 36, 178, 118, 91, 162, 73, 109, 139, 209, 37, 114, 248, 246, 100, 134, 104, 152, 22, 212, 164, 92, 204, 93, 101, 182, 146, 108, 112, 72, 80, 253, 237, 185, 218, 94, 21, 70, 87, 167, 141, 157, 132, 144, 216, 171, 0, 140, 188, 211, 10, 247, 228, 88, 5, 184, 179, 69, 6, 208, 44, 30, 143, 202, 63, 15, 2, 193, 175, 189, 3, 1, 19, 138, 107, 58, 145, 17, 65, 79, 103, 220, 234, 151, 242, 207, 206, 240, 180, 230, 115, 150, 172, 116, 34, 231, 173, 53, 133, 226, 249, 55, 232, 28, 117, 223, 110, 71, 241, 26, 113, 29, 41, 197, 137, 111, 183, 98, 14, 170, 24, 190, 27, 252, 86, 62, 75, 198, 210, 121, 32, 154, 219, 192, 254, 120, 205, 90, 244, 31, 221, 168, 51, 136, 7, 199, 49, 177, 18, 16, 89, 39, 128, 236, 95, 96, 81, 127, 169, 25, 181, 74, 13, 45, 229, 122, 159, 147, 201, 156, 239, 160, 224, 59, 77, 174, 42, 245, 176, 200, 235, 187, 60, 131, 83, 153, 97, 23, 43, 4, 126, 186, 119, 214, 38, 225, 105, 20, 99, 85, 33, 12, 125];
+        var RC = [1, 2, 4, 8, 16, 32, 64, 128, 27, 54];
+
+        function gm(a, b) { var p = 0; for (var i = 0; i < 8; i++) { if (b & 1) p ^= a; var h = a & 0x80; a = (a << 1) & 0xff; if (h) a ^= 0x1b; b >>= 1; } return p; }
+        function kexp(key) { var w = []; for (var i = 0; i < 8; i++)w[i] = [key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]]; for (var i = 8; i < 60; i++) { var t = w[i - 1].slice(); if (i % 8 === 0) { t = [t[1], t[2], t[3], t[0]]; t = t.map(function (b) { return S[b]; }); t[0] ^= RC[i / 8 - 1]; } else if (i % 8 === 4) { t = t.map(function (b) { return S[b]; }); } w[i] = w[i - 8].map(function (b, j) { return b ^ t[j]; }); } return w; }
+        function ark(st, w, r) { for (var c = 0; c < 4; c++)for (var rr = 0; rr < 4; rr++)st[rr][c] ^= w[r * 4 + c][rr]; }
+        function sb(st) { for (var r = 0; r < 4; r++)for (var c = 0; c < 4; c++)st[r][c] = S[st[r][c]]; }
+        function isb(st) { for (var r = 0; r < 4; r++)for (var c = 0; c < 4; c++)st[r][c] = Si[st[r][c]]; }
+        function sr(st) { for (var r = 1; r < 4; r++)st[r] = st[r].slice(r).concat(st[r].slice(0, r)); }
+        function isr(st) { for (var r = 1; r < 4; r++)st[r] = st[r].slice(4 - r).concat(st[r].slice(0, 4 - r)); }
+        function mc(st) { for (var c = 0; c < 4; c++) { var a = st[0][c], b = st[1][c], cc = st[2][c], d = st[3][c]; st[0][c] = gm(2, a) ^ gm(3, b) ^ cc ^ d; st[1][c] = a ^ gm(2, b) ^ gm(3, cc) ^ d; st[2][c] = a ^ b ^ gm(2, cc) ^ gm(3, d); st[3][c] = gm(3, a) ^ b ^ cc ^ gm(2, d); } }
+        function imc(st) { for (var c = 0; c < 4; c++) { var a = st[0][c], b = st[1][c], cc = st[2][c], d = st[3][c]; st[0][c] = gm(14, a) ^ gm(11, b) ^ gm(13, cc) ^ gm(9, d); st[1][c] = gm(9, a) ^ gm(14, b) ^ gm(11, cc) ^ gm(13, d); st[2][c] = gm(13, a) ^ gm(9, b) ^ gm(14, cc) ^ gm(11, d); st[3][c] = gm(11, a) ^ gm(13, b) ^ gm(9, cc) ^ gm(14, d); } }
+        function mkState(blk) { var st = [[], [], [], []]; for (var c = 0; c < 4; c++)for (var r = 0; r < 4; r++)st[r][c] = blk[r + 4 * c]; return st; }
+        function stToBytes(st) { var o = new Uint8Array(16); for (var c = 0; c < 4; c++)for (var r = 0; r < 4; r++)o[r + 4 * c] = st[r][c]; return o; }
+        function encBlk(blk, w) { var st = mkState(blk); ark(st, w, 0); for (var i = 1; i < 14; i++) { sb(st); sr(st); mc(st); ark(st, w, i); } sb(st); sr(st); ark(st, w, 14); return stToBytes(st); }
+        function decBlk(blk, w) { var st = mkState(blk); ark(st, w, 14); for (var i = 13; i >= 1; i--) { isr(st); isb(st); ark(st, w, i); imc(st); } isr(st); isb(st); ark(st, w, 0); return stToBytes(st); }
+
+        /* ── MD5 puro en JavaScript ── */
+        function md5(str) {
+            function safeAdd(x, y) { var l = (x & 65535) + (y & 65535); return (((x >>> 16) + (y >>> 16) + (l >>> 16)) << 16) | (l & 65535); }
+            function rol(n, c) { return (n << c) | (n >>> 32 - c); }
+            function cmn(q, a, b, x, s, t_) { return safeAdd(rol(safeAdd(safeAdd(a, q), safeAdd(x, t_)), s), b); }
+            function ff(a, b, c, d, x, s, t_) { return cmn((b & c) | (~b & d), a, b, x, s, t_); }
+            function gg(a, b, c, d, x, s, t_) { return cmn((b & d) | (c & ~d), a, b, x, s, t_); }
+            function hh(a, b, c, d, x, s, t_) { return cmn(b ^ c ^ d, a, b, x, s, t_); }
+            function ii(a, b, c, d, x, s, t_) { return cmn(c ^ (b | ~d), a, b, x, s, t_); }
+            var n = str.length, m = ((n + 8) >> 6) + 1, x = new Array(m * 16).fill(0);
+            for (var i = 0; i < n; i++)x[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
+            x[n >> 2] |= 0x80 << ((n % 4) * 8); x[m * 16 - 2] = n * 8;
+            var a = 1732584193, b = -271733879, c = -1732584194, d = 271733878;
+            for (var i = 0; i < x.length; i += 16) {
+                var aa = a, bb = b, cc = c, dd = d;
+                a = ff(a, b, c, d, x[i], 7, -680876936); d = ff(d, a, b, c, x[i + 1], 12, -389564586); c = ff(c, d, a, b, x[i + 2], 17, 606105819); b = ff(b, c, d, a, x[i + 3], 22, -1044525330);
+                a = ff(a, b, c, d, x[i + 4], 7, -176418897); d = ff(d, a, b, c, x[i + 5], 12, 1200080426); c = ff(c, d, a, b, x[i + 6], 17, -1473231341); b = ff(b, c, d, a, x[i + 7], 22, -45705983);
+                a = ff(a, b, c, d, x[i + 8], 7, 1770035416); d = ff(d, a, b, c, x[i + 9], 12, -1958414417); c = ff(c, d, a, b, x[i + 10], 17, -42063); b = ff(b, c, d, a, x[i + 11], 22, -1990404162);
+                a = ff(a, b, c, d, x[i + 12], 7, 1804603682); d = ff(d, a, b, c, x[i + 13], 12, -40341101); c = ff(c, d, a, b, x[i + 14], 17, -1502002290); b = ff(b, c, d, a, x[i + 15], 22, 1236535329);
+                a = gg(a, b, c, d, x[i + 1], 5, -165796510); d = gg(d, a, b, c, x[i + 6], 9, -1069501632); c = gg(c, d, a, b, x[i + 11], 14, 643717713); b = gg(b, c, d, a, x[i], 20, -373897302);
+                a = gg(a, b, c, d, x[i + 5], 5, -701558691); d = gg(d, a, b, c, x[i + 10], 9, 38016083); c = gg(c, d, a, b, x[i + 15], 14, -660478335); b = gg(b, c, d, a, x[i + 4], 20, -405537848);
+                a = gg(a, b, c, d, x[i + 9], 5, 568446438); d = gg(d, a, b, c, x[i + 14], 9, -1019803690); c = gg(c, d, a, b, x[i + 3], 14, -187363961); b = gg(b, c, d, a, x[i + 8], 20, 1163531501);
+                a = gg(a, b, c, d, x[i + 13], 5, -1444681467); d = gg(d, a, b, c, x[i + 2], 9, -51403784); c = gg(c, d, a, b, x[i + 7], 14, 1735328473); b = gg(b, c, d, a, x[i + 12], 20, -1926607734);
+                a = hh(a, b, c, d, x[i + 5], 4, -378558); d = hh(d, a, b, c, x[i + 8], 11, -2022574463); c = hh(c, d, a, b, x[i + 11], 16, 1839030562); b = hh(b, c, d, a, x[i + 14], 23, -35309556);
+                a = hh(a, b, c, d, x[i + 1], 4, -1530992060); d = hh(d, a, b, c, x[i + 4], 11, 1272893353); c = hh(c, d, a, b, x[i + 7], 16, -155497632); b = hh(b, c, d, a, x[i + 10], 23, -1094730640);
+                a = hh(a, b, c, d, x[i + 13], 4, 681279174); d = hh(d, a, b, c, x[i], 11, -358537222); c = hh(c, d, a, b, x[i + 3], 16, -722521979); b = hh(b, c, d, a, x[i + 6], 23, 76029189);
+                a = hh(a, b, c, d, x[i + 9], 4, -640364487); d = hh(d, a, b, c, x[i + 12], 11, -421815835); c = hh(c, d, a, b, x[i + 15], 16, 530742520); b = hh(b, c, d, a, x[i + 2], 23, -995338651);
+                a = ii(a, b, c, d, x[i], 6, -198630844); d = ii(d, a, b, c, x[i + 7], 10, 1126891415); c = ii(c, d, a, b, x[i + 14], 15, -1416354905); b = ii(b, c, d, a, x[i + 5], 21, -57434055);
+                a = ii(a, b, c, d, x[i + 12], 6, 1700485571); d = ii(d, a, b, c, x[i + 3], 10, -1894986606); c = ii(c, d, a, b, x[i + 10], 15, -1051523); b = ii(b, c, d, a, x[i + 1], 21, -2054922799);
+                a = ii(a, b, c, d, x[i + 8], 6, 1873313359); d = ii(d, a, b, c, x[i + 15], 10, -30611744); c = ii(c, d, a, b, x[i + 6], 15, -1560198380); b = ii(b, c, d, a, x[i + 13], 21, 1309151649);
+                a = ii(a, b, c, d, x[i + 4], 6, -145523070); d = ii(d, a, b, c, x[i + 11], 10, -1120210379); c = ii(c, d, a, b, x[i + 2], 15, 718787259); b = ii(b, c, d, a, x[i + 9], 21, -343485551);
+                a = safeAdd(a, aa); b = safeAdd(b, bb); c = safeAdd(c, cc); d = safeAdd(d, dd);
+            }
+            var res = new Uint8Array(16);
+            [[a, 0], [b, 4], [c, 8], [d, 12]].forEach(function (p) { var v = p[0], o = p[1]; res[o] = v & 0xff; res[o + 1] = (v >> 8) & 0xff; res[o + 2] = (v >> 16) & 0xff; res[o + 3] = (v >> 24) & 0xff; });
+            return res;
+        }
+
+        /* ── Construcción de clave (replica exacta del C#) ── */
+        function buildKey() {
+            var temp = md5('tesci!lacerta');
+            var hash = new Uint8Array(32);
+            hash.set(temp, 0);
+            hash.set(temp, 15);
+            return hash;
+        }
+
+        /* ── Encrypt / Decrypt ECB ── */
+        function aesEncrypt(plain) {
+            var key = buildKey();
+            var w = kexp(Array.from(key));
+            var bytes = [];
+            for (var i = 0; i < plain.length; i++)bytes.push(plain.charCodeAt(i) & 0xff);
+            var pad = 16 - (bytes.length % 16);
+            for (var i = 0; i < pad; i++)bytes.push(pad);
+            var out = new Uint8Array(bytes.length);
+            for (var i = 0; i < bytes.length; i += 16) {
+                var blk = new Uint8Array(bytes.slice(i, i + 16));
+                out.set(encBlk(blk, w), i);
+            }
+            return btoa(String.fromCharCode.apply(null, out));
+        }
+
+        function aesDecrypt(b64) {
+            var key = buildKey();
+            var w = kexp(Array.from(key));
+            var raw = atob(b64);
+            var buf = new Uint8Array(raw.length);
+            for (var i = 0; i < raw.length; i++)buf[i] = raw.charCodeAt(i);
+            var out = [];
+            for (var i = 0; i < buf.length; i += 16) {
+                var blk = buf.slice(i, i + 16);
+                var dec = decBlk(blk, w);
+                for (var j = 0; j < dec.length; j++)out.push(dec[j]);
+            }
+            var pad = out[out.length - 1];
+            if (pad < 1 || pad > 16) throw new Error('Padding inválido');
+            out = out.slice(0, out.length - pad);
+            return out.map(function (b) { return String.fromCharCode(b); }).join('');
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           UI
+           ═══════════════════════════════════════════════════════════ */
+        var mode = 'e', hist = [];
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('te').className = 'ds-tab' + (m === 'e' ? ' active' : '');
+            document.getElementById('td').className = 'ds-tab' + (m === 'd' ? ' active' : '');
+            document.getElementById('ilbl').innerHTML = '<span class="prompt">$ </span>' + (m === 'e' ? t('input_label') : t('input_label_d'));
+            document.getElementById('inp').placeholder = m === 'e' ? t('placeholder_e') : t('placeholder_d');
+            document.getElementById('btxt').textContent = m === 'e' ? t('btn_encrypt') : t('btn_decrypt');
+            document.getElementById('res').style.display = 'none';
+            document.getElementById('err').style.display = 'none';
+        }
+
+        function run() {
+            document.getElementById('err').style.display = 'none';
+            document.getElementById('res').style.display = 'none';
+            var inp = document.getElementById('inp').value;
+            if (!inp.trim()) { showErr(mode === 'e' ? t('err_empty_e') : t('err_empty_d')); return; }
+            try {
+                var result = mode === 'e' ? aesEncrypt(inp) : aesDecrypt(inp.trim());
+                document.getElementById('rlbl').textContent = mode === 'e' ? t('result_encrypt') : t('result_decrypt');
+                document.getElementById('out').value = result;
+                document.getElementById('chips').innerHTML = [
+                    mode === 'e' ? inp.length + ' BYTES IN' : inp.trim().length + ' CHARS IN',
+                    result.length + (mode === 'e' ? ' CHARS BASE64' : ' BYTES OUT'),
+                    'AES-256 · ECB · PKCS7'
+                ].map(function (c) { return '<span class="chip">' + c + '</span>'; }).join('');
+                document.getElementById('res').style.display = 'block';
+                var cpb = document.getElementById('cpb');
+                cpb.className = 'cpybtn';
+                cpb.innerHTML = '<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>' + t('copy') + '</span>';
+                addHist(mode, mode === 'e' ? inp : result, mode === 'e' ? result : inp.trim());
+            } catch (e) { showErr('ERROR: ' + e.message); }
+        }
+
+        function showErr(msg) { var el = document.getElementById('err'); el.textContent = msg; el.style.display = 'block'; }
+
+        function doCopy() {
+            var txt = document.getElementById('out').value;
+            navigator.clipboard.writeText(txt).catch(function () { });
+            var btn = document.getElementById('cpb');
+            btn.className = 'cpybtn ok';
+            btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"/></svg><span>' + t('copied') + '</span>';
+            addHistEntry('copy', t('op_copy'), '');
+            setTimeout(function () {
+                btn.className = 'cpybtn';
+                btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>' + t('copy') + '</span>';
+            }, 2000);
+        }
+
+        function addHist(type, plain, cipher) {
+            var d = new Date();
+            var ts = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0') + ':' + d.getSeconds().toString().padStart(2, '0');
+            hist.unshift({ type: type, plain: plain, cipher: cipher, time: ts });
+            if (hist.length > 20) hist.pop();
+            renderHist();
+        }
+
+        function addHistEntry(type, msg, detail) {
+            var d = new Date();
+            var ts = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0') + ':' + d.getSeconds().toString().padStart(2, '0');
+            hist.unshift({ type: type, plain: msg, cipher: detail, time: ts, logOnly: true });
+            if (hist.length > 20) hist.pop();
+            renderHist();
+        }
+
+        function renderHist() {
+            var el = document.getElementById('hlist');
+            if (!hist.length) {
+                el.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span>' + t('no_ops') + '</span></div>';
+                return;
+            }
+            el.innerHTML = hist.map(function (h, i) {
+                if (h.logOnly) {
+                    return '<div class="hi" style="cursor:default">' +
+                        '<span class="hb" style="opacity:.7">LOG</span>' +
+                        '<div class="ht"><div class="hp">' + esc(h.plain) + '</div></div>' +
+                        '<span class="htime">' + h.time + '</span></div>';
+                }
+                var label = h.type === 'e' ? t('op_encrypt') : t('op_decrypt');
+                return '<div class="hi" onclick="loadHist(' + i + ')" title="Click to load">' +
+                    '<span class="hb ' + (h.type === 'e' ? 'e' : 'd') + '">' + label + '</span>' +
+                    '<div class="ht"><div class="hp">' + esc(h.plain) + '</div><div class="hc">' + esc(h.cipher) + '</div></div>' +
+                    '<span class="htime">' + h.time + '</span></div>';
+            }).join('');
+        }
+
+        function loadHist(i) {
+            var h = hist[i];
+            if (h.logOnly) return;
+            setMode(h.type);
+            document.getElementById('inp').value = h.type === 'e' ? h.plain : h.cipher;
+            document.getElementById('rlbl').textContent = h.type === 'e' ? t('result_encrypt') : t('result_decrypt');
+            document.getElementById('out').value = h.type === 'e' ? h.cipher : h.plain;
+            document.getElementById('chips').innerHTML = '<span class="chip">' + t('hist_loaded') + '</span><span class="chip">AES-256 · ECB</span>';
+            document.getElementById('res').style.display = 'block';
+        }
+
+        function clearHist() { hist = []; renderHist(); }
+        function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        // Ctrl+Enter to run
+        document.addEventListener('keydown', function (e) { if (e.ctrlKey && e.key === 'Enter') run(); });
+
+        // Init placeholder
+        setMode('e');
+    </script>
+
+    <script>
+        /* ═══════════════════════════════════════════════════════════
+           AUDIO  (Web Audio API · offline · solo SFX de clic)
+           La música se quitó; se mantienen los sonidos de los botones.
+           ═══════════════════════════════════════════════════════════ */
+        var SFX_VOLUME = 0.50;   // volumen de los clics (0.0 mudo · 1.0 máximo)
+        var audio = { ctx: null, master: null, sfxOn: true };
+
+        function ensureCtx() {
+            if (!audio.ctx) {
+                var AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return false;
+                audio.ctx = new AC();
+                audio.master = audio.ctx.createGain();
+                audio.master.gain.value = 1.0;
+                audio.master.connect(audio.ctx.destination);
+            }
+            if (audio.ctx.state === 'suspended') { audio.ctx.resume(); }
+            return true;
+        }
+
+        /* ── Short terminal "click" blip ── */
+        function playClick() {
+            if (!audio.sfxOn) return;
+            if (!ensureCtx()) return;
+            var c = audio.ctx, now = c.currentTime;
+            var o = c.createOscillator(), g = c.createGain();
+            o.type = 'square';
+            o.frequency.setValueAtTime(840, now);
+            o.frequency.exponentialRampToValueAtTime(190, now + 0.07);
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.32 * SFX_VOLUME), now + 0.004);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+            o.connect(g); g.connect(audio.master);
+            o.start(now); o.stop(now + 0.12);
+            // tiny noise tick for texture
+            var b = c.createBuffer(1, 256, c.sampleRate), d = b.getChannelData(0);
+            for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+            var src = c.createBufferSource(), ng = c.createGain();
+            src.buffer = b; ng.gain.value = 0.1 * SFX_VOLUME;
+            src.connect(ng); ng.connect(audio.master); src.start(now);
+        }
+
+        /* SFX siempre activo: no hay forma de desactivarlo. */
+
+        /* Desbloquear el AudioContext en el primer gesto del usuario
+           (los navegadores exigen interacción antes de reproducir audio). */
+        function unlockAudio() {
+            ensureCtx();
+            document.removeEventListener('pointerdown', unlockAudio);
+            document.removeEventListener('keydown', unlockAudio);
+        }
+        document.addEventListener('pointerdown', unlockAudio);
+        document.addEventListener('keydown', unlockAudio);
+
+        /* ── Global click SFX (delegated, capture phase) ── */
+        document.addEventListener('click', function (e) {
+            var b = e.target.closest('button, .hi[onclick]');
+            if (b) playClick();
+        }, true);
+
+        /* ═══════════════════════════════════════════════════════════
+           IMAGE / GIF SLOTS
+           ─ Pon tu archivo junto a index.html (ej. assets/logo.gif)
+             y escribe la ruta abajo. Si lo dejas vacío, se muestra
+             el arte ASCII por defecto.
+           ─ MEDIA_GRAYSCALE = true mantiene la imagen en monocromo.
+           ═══════════════════════════════════════════════════════════ */
+        var BRAND_IMG = 'img/decsec.gif';    // calavera grande (columna izquierda)
+        var NOTES_IMG = 'img/dedsec2.gif';   // logo pequeño (panel NOTES)
+        var MEDIA_GRAYSCALE = true;
+
+        (function () {
+            if (MEDIA_GRAYSCALE) {
+                var bm = document.getElementById('brand-media');
+                var nm = document.getElementById('notes-media');
+                if (bm) bm.classList.add('mono-media');
+                if (nm) nm.classList.add('mono-media');
+            }
+            function loadSlot(src, imgId, asciiSel) {
+                if (!src) return;
+                var img = document.getElementById(imgId);
+                if (!img) return;
+                var ascii = img.parentNode.querySelector(asciiSel);
+                img.onload = function () {
+                    img.style.display = 'block';
+                    if (ascii) ascii.style.display = 'none';
+                };
+                img.onerror = function () { /* keep ASCII fallback */ };
+                img.src = src;
+            }
+            loadSlot(BRAND_IMG, 'brand-img', '.skull');
+            loadSlot(NOTES_IMG, 'notes-img', '.monogram');
+        })();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    </script>
+</body>
+</html>
