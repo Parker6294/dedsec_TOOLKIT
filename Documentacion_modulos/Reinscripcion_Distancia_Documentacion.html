@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reinscripción a distancia — Documentación técnica</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #14181f;
+    --ink-soft: #4b5563;
+    --ink-faint: #8891a0;
+    --paper: #ffffff;
+    --panel: #f6f7f9;
+    --line: #e2e5ea;
+    --navy: #0b2860;
+    --navy-soft: rgba(11,40,96,.06);
+    --gold: #b98a2a;
+    --risk-high: #b3261e;
+    --risk-med: #9a6b12;
+    --risk-ok: #1f7a54;
+    --sans: 'Nunito', 'Segoe UI', Arial, sans-serif;
+    --display: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.65; font-size: 15px; }
+  code { font-family: var(--mono); font-size: 12.5px; background: var(--navy-soft); color: var(--navy); padding: 1px 5px; border-radius: 4px; }
+
+  /* ---- masthead ---- */
+  header.mast { background: var(--navy); color: #fff; padding: 40px 24px 26px; }
+  .mast-inner { max-width: 880px; margin: 0 auto; }
+  .mast-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .eyebrow { font-size: 11.5px; text-transform: uppercase; letter-spacing: .09em; color: #9fb3d6; font-weight: 700; margin-bottom: 10px; }
+  header.mast h1 { font-family: var(--display); font-size: 32px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 10px; }
+  header.mast p.desc { margin: 0; color: #c3cee6; font-size: 14.5px; max-width: 620px; }
+  .print-btn {
+    flex: none; font-family: var(--sans); font-weight: 700; font-size: 12.5px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.25); color: #fff;
+    border-radius: 6px; padding: 8px 14px; cursor: pointer;
+  }
+  .print-btn:hover { background: rgba(255,255,255,.16); }
+  .meta-row {
+    margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.18);
+    display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 12px; color: #9fb3d6;
+  }
+  .meta-row span b { color: #dbe4f4; font-weight: 700; }
+
+  /* ---- tab nav ---- */
+  nav.tabs {
+    position: sticky; top: 0; z-index: 10; background: var(--paper);
+    border-bottom: 1px solid var(--line); display: flex; gap: 28px;
+    max-width: 880px; margin: 0 auto; padding: 0 24px;
+  }
+  nav.tabs a {
+    display: flex; align-items: center; gap: 8px; padding: 14px 0; margin-bottom: -1px;
+    color: var(--ink-faint); text-decoration: none; font-weight: 700; font-size: 13.5px;
+    border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  nav.tabs a .num {
+    width: 18px; height: 18px; border-radius: 50%; border: 1px solid currentColor;
+    font-size: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--mono);
+  }
+  nav.tabs a:hover { color: var(--navy); }
+  nav.tabs a.active { color: var(--navy); border-bottom-color: var(--navy); }
+
+  main { max-width: 880px; margin: 0 auto; padding: 44px 24px 100px; }
+  main section { margin-bottom: 52px; scroll-margin-top: 60px; }
+  main h2 { font-family: var(--display); color: var(--ink); font-size: 20px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.005em; }
+  main h3.sub { font-family: var(--display); color: var(--ink); font-size: 15px; font-weight: 600; margin: 30px 0 10px; }
+  main .lead { color: var(--ink-soft); font-size: 14px; margin: 0 0 20px; max-width: 620px; }
+
+  .callout {
+    background: var(--panel); border-left: 3px solid var(--navy); border-radius: 4px;
+    padding: 18px 22px;
+  }
+  .callout p { margin: 0 0 10px; font-size: 14.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--risk-med); }
+
+  /* ---- diagram panel ---- */
+  .diagram-panel { border: 1px solid var(--line); border-radius: 8px; padding: 20px; background: var(--paper); }
+  .flowsvg { width: 100%; height: auto; display: block; }
+  .figcap { text-align: center; color: var(--ink-faint); font-size: 12.5px; margin: 12px 0 0; }
+
+  .fnode { cursor: pointer; outline: none; }
+  .fnode rect.mainbox { fill: #fff; stroke: var(--navy); transition: stroke-width .12s; }
+  .fnode rect.mainbox.exit { stroke-dasharray: 4 3; stroke: var(--ink-faint); }
+  .fnode:hover, .fnode:focus-visible { filter: drop-shadow(0 4px 10px rgba(11,40,96,.18)); }
+  .fnode:hover rect.mainbox, .fnode:focus-visible rect.mainbox { stroke-width: 1.6; }
+  text.ft { font-family: var(--sans); font-weight: 700; font-size: 13.5px; fill: var(--ink); }
+  text.fts { font-family: var(--sans); font-weight: 400; font-size: 11.5px; fill: var(--ink-soft); }
+  text.ftag { font-family: var(--mono); font-size: 8.5px; letter-spacing: .06em; fill: var(--navy); opacity: .55; }
+  .flabel { font-family: var(--sans); font-size: 11px; font-weight: 700; fill: var(--ink-faint); }
+
+  /* ---- tables ---- */
+  table.risktable, table.datatable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.risktable th, table.datatable th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--ink-faint); font-weight: 700; padding: 0 12px 10px; border-bottom: 1px solid var(--line);
+  }
+  table.risktable td, table.datatable td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.risktable tbody tr { cursor: pointer; transition: background .1s; }
+  table.risktable tbody tr:hover, table.risktable tbody tr:focus-visible { background: var(--panel); outline: none; }
+  table.risktable tbody tr:last-child td, table.datatable tbody tr:last-child td { border-bottom: none; }
+  .lvl { display: flex; align-items: center; gap: 7px; font-weight: 700; white-space: nowrap; }
+  .lvl .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .lvl.high { color: var(--risk-high); } .lvl.high .dot { background: var(--risk-high); }
+  .lvl.med { color: var(--risk-med); } .lvl.med .dot { background: var(--risk-med); }
+  .lvl.ok { color: var(--risk-ok); } .lvl.ok .dot { background: var(--risk-ok); }
+  table.risktable td.desc, table.datatable td.desc { color: var(--ink-soft); }
+  table.risktable td b, table.datatable td b { color: var(--ink); }
+  table.datatable td:first-child { white-space: nowrap; }
+
+  footer.doc-footer {
+    border-top: 1px solid var(--line); padding: 22px 24px; text-align: center;
+    color: var(--ink-faint); font-size: 12px; max-width: 880px; margin: 0 auto;
+  }
+
+  /* ---- modal ---- */
+  .overlay {
+    display: none; position: fixed; inset: 0; background: rgba(20,24,31,.5);
+    align-items: center; justify-content: center; padding: 24px; z-index: 100;
+  }
+  .overlay.open { display: flex; animation: fadeIn .15s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--paper); border-radius: 10px; max-width: 560px; width: 100%;
+    max-height: 84vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(20,24,31,.28);
+    animation: popIn .16s cubic-bezier(.2,.9,.3,1.1); border-top: 4px solid var(--navy);
+  }
+  @keyframes popIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 20px 22px 14px; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: var(--paper);
+  }
+  .modal-head h3 { font-family: var(--display); color: var(--ink); font-size: 17px; font-weight: 600; margin: 0; padding-right: 16px; }
+  .modal-close { flex: none; background: none; border: none; font-size: 20px; line-height: 1; color: var(--ink-faint); cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+  .modal-close:hover { background: var(--panel); color: var(--ink); }
+  .modal-body { padding: 18px 22px 24px; }
+  .modal-body p { margin: 0 0 12px; font-size: 14px; }
+  .qa { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 8px; }
+  .qa .q { font-weight: 700; color: var(--ink); font-size: 13.5px; margin: 12px 0 3px; }
+  .qa .q:first-child { margin-top: 0; }
+  .qa .a { color: var(--ink-soft); font-size: 13.5px; margin: 0; }
+
+  @media print {
+    nav.tabs, .print-btn, .overlay { display: none !important; }
+    header.mast { background: #fff !important; color: var(--ink) !important; }
+    header.mast .eyebrow, header.mast p.desc, .meta-row { color: var(--ink-soft) !important; }
+    .meta-row { border-top-color: var(--line) !important; }
+  }
+  @media (max-width: 760px) {
+    nav.tabs { gap: 18px; overflow-x: auto; }
+    .scrollx { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="mast-inner">
+    <div class="mast-top">
+      <div>
+        <div class="eyebrow">SIITESCI · Unidad de Información</div>
+        <h1>Reinscripción a distancia</h1>
+        <p class="desc">Documentación técnica y flujo de uso del módulo de autoservicio para alumnos, con verificación automática de pago contra los registros del portal.</p>
+      </div>
+      <button class="print-btn" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+    <div class="meta-row">
+      <span>Módulo: <b>ReinscripcionDistancia.aspx</b></span>
+      <span>Capa: <b>TESCI.Alumnos</b></span>
+      <span>Generado: <b>07 de julio de 2026</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="#resumen"><span class="num">1</span> Resumen</a>
+  <a href="#flujo"><span class="num">2</span> Flujo</a>
+  <a href="#seguridad"><span class="num">3</span> Riesgos</a>
+  <a href="#tecnico"><span class="num">4</span> Técnico</a>
+</nav>
+
+<main>
+
+  <section id="resumen">
+    <h2>Resumen</h2>
+    <p class="lead">Qué hace el módulo y para quién es.</p>
+    <div class="callout">
+      <p>El alumno entra logueado (sin buscar su número de control, como en ventanilla): el sistema lo resuelve desde su sesión y encuentra automáticamente el periodo de reinscripción abierto para su carrera. El pago se verifica sin capturas manuales, consultando <code>TES_TM_PAGOS_PORTAL</code> — la misma tabla que usa Control Escolar en ventanilla, cargada desde el Excel que reporta Contabilidad.</p>
+      <p>Con el pago verificado, el alumno arma su carga (materias, inglés, actividad complementaria), la confirma, y el sistema aplica los candados reglamentarios (Art. 34, 35, 43 d, Servicio Social, Residencias) antes de registrar la inscripción y mostrar el comprobante con sus cuotas.</p>
+    </div>
+  </section>
+
+  <section id="flujo">
+    <h2>Flujo del módulo</h2>
+    <p class="lead">Da clic en cualquier paso del diagrama para ver su documentación y preguntas frecuentes.</p>
+
+    <div class="diagram-panel">
+      <svg class="flowsvg" viewBox="0 0 680 716" role="img" aria-label="Diagrama de flujo del módulo de reinscripción a distancia">
+        <defs>
+          <marker id="farrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#8b95a8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <pattern id="dotgrid" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="1.2" cy="1.2" r="1.1" fill="#e6e9ee"/>
+          </pattern>
+        </defs>
+
+        <rect x="0" y="0" width="680" height="716" fill="url(#dotgrid)"/>
+
+        <g class="fnode" data-doc="doc-entra" tabindex="0">
+          <rect x="135" y="35" width="290" height="66" rx="11" fill="none" stroke="var(--navy)" stroke-opacity=".25"/>
+          <rect class="mainbox" x="140" y="40" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ftag" x="144" y="34" text-anchor="start">INICIO</text>
+          <text class="ft" x="280" y="58" text-anchor="middle">Alumno entra al módulo</text>
+          <text class="fts" x="280" y="76" text-anchor="middle">Inicia sesión, carga sus datos</text>
+        </g>
+
+        <line x1="280" y1="101" x2="280" y2="156" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+
+        <g class="fnode" data-doc="doc-requisitos" tabindex="0">
+          <rect class="mainbox" x="140" y="156" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ft" x="280" y="174" text-anchor="middle">Verifica requisitos</text>
+          <text class="fts" x="280" y="192" text-anchor="middle">Periodo, complemento, avance</text>
+        </g>
+
+        <text class="flabel" x="435" y="174" text-anchor="middle">No</text>
+        <line x1="420" y1="184" x2="450" y2="184" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+        <g class="fnode" data-doc="doc-fueraperiodo" tabindex="0">
+          <rect class="mainbox exit" x="450" y="156" width="170" height="56" rx="8" stroke-width="1"/>
+          <text class="ft" x="535" y="174" text-anchor="middle">Fuera de periodo</text>
+          <text class="fts" x="535" y="192" text-anchor="middle">Termina el proceso</text>
+        </g>
+
+        <text class="flabel" x="296" y="240" text-anchor="start">Sí</text>
+        <line x1="280" y1="212" x2="280" y2="272" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+
+        <g class="fnode" data-doc="doc-pago" tabindex="0">
+          <rect class="mainbox" x="140" y="272" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ft" x="280" y="290" text-anchor="middle">Verifica su pago</text>
+          <text class="fts" x="280" y="308" text-anchor="middle">Detección automática del pago</text>
+        </g>
+
+        <line x1="280" y1="328" x2="280" y2="388" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+
+        <g class="fnode" data-doc="doc-seleccion" tabindex="0">
+          <rect class="mainbox" x="140" y="388" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ft" x="280" y="406" text-anchor="middle">Selecciona materias</text>
+          <text class="fts" x="280" y="424" text-anchor="middle">Inglés y complementarias</text>
+        </g>
+
+        <line x1="280" y1="444" x2="280" y2="504" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+
+        <g class="fnode" data-doc="doc-candados" tabindex="0">
+          <rect class="mainbox" x="140" y="504" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ft" x="280" y="522" text-anchor="middle">Confirma e inscribe</text>
+          <text class="fts" x="280" y="540" text-anchor="middle">Aplica candados académicos</text>
+        </g>
+
+        <line x1="280" y1="560" x2="280" y2="615" stroke="#8b95a8" stroke-width="1.5" marker-end="url(#farrow)"/>
+
+        <g class="fnode" data-doc="doc-comprobante" tabindex="0">
+          <rect x="135" y="615" width="290" height="66" rx="11" fill="none" stroke="var(--navy)" stroke-opacity=".25"/>
+          <rect class="mainbox" x="140" y="620" width="280" height="56" rx="8" stroke-width="1"/>
+          <text class="ftag" x="144" y="614" text-anchor="start">FIN</text>
+          <text class="ft" x="280" y="638" text-anchor="middle">Comprobante final</text>
+          <text class="fts" x="280" y="656" text-anchor="middle">Carga y cuotas registradas</text>
+        </g>
+      </svg>
+      <p class="figcap">Fig. 1 — Flujo del alumno en el módulo de reinscripción a distancia. Cada paso abre su documentación al hacer clic.</p>
+    </div>
+  </section>
+
+  <section id="seguridad">
+    <h2>Riesgos y validaciones</h2>
+    <p class="lead">Qué podría intentar un alumno (o salir mal) y qué tan protegido está cada punto. Da clic en una fila para más detalle.</p>
+
+    <table class="risktable">
+      <thead>
+        <tr><th style="width:110px">Nivel</th><th>Riesgo</th></tr>
+      </thead>
+      <tbody>
+        <tr data-doc="risk-otroalumno" tabindex="0">
+          <td><span class="lvl ok"><span class="dot"></span>Protegido</span></td>
+          <td class="desc"><b>Usar el pago de otro alumno.</b> Cada pago ya viene ligado a un número de control en la tabla; no hay captura manual que adjudicar.</td>
+        </tr>
+        <tr data-doc="risk-html" tabindex="0">
+          <td><span class="lvl ok"><span class="dot"></span>Protegido</span></td>
+          <td class="desc"><b>Manipular el HTML o la consola del navegador</b> para forzar botones ocultos o saltarse pasos.</td>
+        </tr>
+        <tr data-doc="risk-doble" tabindex="0">
+          <td><span class="lvl ok"><span class="dot"></span>Protegido</span></td>
+          <td class="desc"><b>Inscribirse dos veces</b> en el mismo periodo, por reintento o doble clic.</td>
+        </tr>
+        <tr data-doc="risk-duplicado" tabindex="0">
+          <td><span class="lvl med"><span class="dot"></span>Medio</span></td>
+          <td class="desc"><b>Pagar el mismo concepto dos veces por error.</b> El registro no maneja bandera de "usado"; un pago de más pasa desapercibido.</td>
+        </tr>
+        <tr data-doc="risk-forzado" tabindex="0">
+          <td><span class="lvl med"><span class="dot"></span>Medio</span></td>
+          <td class="desc"><b>Liberar a producción con <code>PeriodoForzado</code> distinto de 0</b> — abriría la reinscripción fuera de calendario.</td>
+        </tr>
+        <tr data-doc="risk-ingles" tabindex="0">
+          <td><span class="lvl med"><span class="dot"></span>Medio</span></td>
+          <td class="desc"><b>Deuda técnica en el registro de inglés:</b> dos sentencias heredadas de ventanilla que aún no usan parámetros SQL.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="figcap">Tabla 1 — Riesgos identificados y su mitigación.</p>
+  </section>
+
+  <section id="tecnico">
+    <h2>Referencia técnica</h2>
+    <p class="lead">Para el desarrollador que dé mantenimiento al módulo. La conexión directa a BD usa siempre <code>dbConnQuery</code> del web.config, nunca <code>Connect.conn_sql</code>.</p>
+
+    <h3 class="sub">Tablas y procedimientos usados directamente</h3>
+    <div class="scrollx">
+      <table class="datatable">
+        <thead><tr><th>Objeto</th><th>Uso en el módulo</th></tr></thead>
+        <tbody>
+          <tr><td><code>TES_TM_PAGOS_PORTAL</code></td><td class="desc">Verificación automática de pago por <b>Ref_NoControl</b> + <b>Ref_PeriodoId</b>. Misma tabla que ventanilla; sin bandera de "usado".</td></tr>
+          <tr><td><code>TES_TD_ALUMNO_COMPLEMENTO</code></td><td class="desc">Complemento estadístico (<b>Alc_Contestado</b>). Informativo, no bloquea.</td></tr>
+          <tr><td><code>TES_TD_ALUMNO_ACTIVIDAD</code> + <code>TES_TM_ACTIVIDAD</code></td><td class="desc">Créditos complementarios acreditados (≥5 oculta el selector y habilita Residencias) e inserción de la actividad elegida.</td></tr>
+          <tr><td><code>TES_TD_ALUMNO_CARGA_HORARIA</code></td><td class="desc">Último periodo cursado (Art. 43 d), historial de inglés para la preselección, e inserción del nivel de inglés inscrito.</td></tr>
+          <tr><td><code>TES_TR_ALUMNOEXCEPCION</code></td><td class="desc">Alumnos exentos de candados académicos.</td></tr>
+          <tr><td><code>TES_SP_CARGAR_HORARIOS_INGLES</code></td><td class="desc">Grupos disponibles del nivel de inglés seleccionado.</td></tr>
+          <tr><td><code>TES_SP_HORARIO_ACTIVIDADES_COMPLE</code> / <code>_INTER</code></td><td class="desc">Actividades complementarias abiertas del periodo (<code>_INTER</code> solo para el periodo 56).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Capa de negocio</h3>
+    <div class="scrollx">
+      <table class="datatable">
+        <thead><tr><th>Clase</th><th>Métodos consumidos</th></tr></thead>
+        <tbody>
+          <tr><td><code>SeguridadBus</code></td><td class="desc"><code>getNoControlXUsuarioId</code> — resuelve el número de control desde la sesión.</td></tr>
+          <tr><td><code>ControlEscolarBus</code></td><td class="desc"><code>getDatosGeneralesAlumno</code>, <code>validaIncrito</code>, <code>validaPeriodoReinscripciones</code>, <code>getGrupoPrimerIngreso</code>, <code>getCargaHorariaInscripcion</code>, <code>getBecasActivas</code>, <code>getDoctosFaltantes</code>, <code>incripcionAlumno</code>, <code>getCoutasInscripcionAlumno</code>.</td></tr>
+          <tr><td><code>CatalogosBus</code></td><td class="desc"><code>getListaPeriodos(true)</code>, <code>getListaGruposInscripcionRegular</code>, <code>getGrupoHorarioInscripcion</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Candados académicos (método <code>Candados()</code>)</h3>
+    <div class="scrollx">
+      <table class="datatable">
+        <thead><tr><th>Regla</th><th>Condición de bloqueo</th></tr></thead>
+        <tbody>
+          <tr><td><b>Grupo de inglés</b></td><td class="desc">Nivel distinto de Liberado (857) sin grupo seleccionado.</td></tr>
+          <tr><td><b>Art. 34</b></td><td class="desc">Carga menor a 20 créditos (excepto si lleva Residencias). Servicio Social no suma créditos.</td></tr>
+          <tr><td><b>Art. 35</b></td><td class="desc">Carga mayor a 36 créditos.</td></tr>
+          <tr><td><b>Art. 43 d)</b></td><td class="desc">Más de 12 periodos desde su última carga registrada.</td></tr>
+          <tr><td><b>Servicio Social</b></td><td class="desc">Avance menor al 70&nbsp;% (69&nbsp;% en Mecatrónica).</td></tr>
+          <tr><td><b>Residencias</b></td><td class="desc">Menos de 5 créditos complementarios acreditados, o avance menor al 80&nbsp;%.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="figcap" style="text-align:left">Los alumnos con registro en <code>TES_TR_ALUMNOEXCEPCION</code> y los de las dos maestrías se saltan estos candados por diseño.</p>
+
+    <h3 class="sub">Estado del módulo (ViewState / HiddenFields)</h3>
+    <div class="scrollx">
+      <table class="datatable">
+        <thead><tr><th>Clave</th><th>Contenido</th></tr></thead>
+        <tbody>
+          <tr><td><code>NoControl</code></td><td class="desc">Número de control resuelto desde la sesión (long).</td></tr>
+          <tr><td><code>PeriodoId</code></td><td class="desc">Periodo de reinscripción abierto resuelto (o forzado en pruebas).</td></tr>
+          <tr><td><code>IdCarrera</code> / <code>Avance</code></td><td class="desc">Carrera y porcentaje de avance para los candados.</td></tr>
+          <tr><td><code>PagoValidado</code></td><td class="desc">Existe al menos un pago en <code>TES_TM_PAGOS_PORTAL</code> para el alumno y periodo.</td></tr>
+          <tr><td><code>hidMaterias</code></td><td class="desc">JSON con la lista <code>List&lt;GrupoHorario&gt;</code> de la carga elegida (Paso 1 → Paso 2).</td></tr>
+          <tr><td><code>hidActividadId</code></td><td class="desc">Id de la actividad complementaria elegida; se inserta al inscribir.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Pendientes antes de liberar</h3>
+    <div class="callout warn">
+      <p><b>1.</b> Dejar <code>PeriodoForzado = 0</code> (modo prueba que salta la validación de calendario).</p>
+      <p><b>2.</b> Confirmar las rutas reales de los reportes de comprobante y carga horaria (<code>fnImprimirCarga</code> / <code>fnImprimirCargaHoraria</code> tienen TODO en el JS).</p>
+      <p><b>3.</b> Migrar el DELETE/INSERT del nivel de inglés de <code>string.Format</code> a consultas parametrizadas (<code>EjecutarParam</code>).</p>
+      <p><b>4.</b> Retirar o condicionar la instrumentación <code>Stopwatch</code>/<code>Debug.WriteLine</code> de <code>IniciarReinscripcion()</code>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="doc-footer">SIITESCI · Tecnológico de Estudios Superiores de Cuautitlán Izcalli · Documento generado para uso interno el 07 de julio de 2026</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  var DOCS = {
+    'doc-entra': {
+      title: '1. Alumno entra al módulo',
+      html: '<p>No hay búsqueda manual de número de control como en la ventanilla: el sistema lo resuelve desde la sesión del alumno (<code>SeguridadBus.getNoControlXUsuarioId</code>) y valida que el rol de sesión sea Alumno antes de continuar. Si el expediente está en <b>baja definitiva</b> o marcado <b>con errores</b>, el proceso se detiene con un mensaje que lo canaliza a Servicios Escolares.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Qué pasa si la sesión caducó?</p><p class="a">El sistema redirige a la pantalla de inicio de sesión; el alumno debe volver a entrar.</p>' +
+        '<p class="q">¿Alguien más puede reinscribirse usando mi cuenta?</p><p class="a">Sí, si comparte su contraseña. El módulo valida el rol y el número de control asociados a la sesión, pero no puede distinguir quién está usando físicamente la cuenta.</p>' +
+        '</div>'
+    },
+    'doc-requisitos': {
+      title: '2. Verifica requisitos',
+      html: '<p>Se revisan tres cosas: que exista un periodo de reinscripción abierto para la carrera, si el complemento estadístico fue contestado, y el porcentaje de avance del alumno. Solo el periodo (y el pago del paso siguiente) son candados reales; el complemento es informativo.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿El complemento estadístico bloquea la reinscripción?</p><p class="a">No. Aparece como pendiente, pero no impide avanzar.</p>' +
+        '<p class="q">¿Cómo se elige el periodo si hay varios activos?</p><p class="a">El sistema recorre los periodos del más reciente al más viejo y usa el primero cuyo calendario de reinscripción esté vigente para la carrera del alumno.</p>' +
+        '<p class="q">¿Y si el alumno ya estaba inscrito en ese periodo?</p><p class="a">Se le muestra directamente su comprobante, sin permitir una segunda inscripción.</p>' +
+        '</div>'
+    },
+    'doc-fueraperiodo': {
+      title: '2a. Fuera de periodo',
+      html: '<p>Si ningún periodo tiene el calendario de reinscripción abierto para la carrera del alumno, se muestra el aviso "Fuera de periodo de reinscripción" y el botón para continuar no aparece.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Qué debe hacer el alumno si esto ocurre por error?</p><p class="a">Acudir a Control Escolar; el mensaje ya lo indica en la parte inferior de la tarjeta de estatus.</p>' +
+        '<p class="q">¿Existe una forma de probar el módulo fuera de calendario?</p><p class="a">Sí: la constante <code>PeriodoForzado</code> del code-behind fuerza un periodo específico para pruebas. Debe quedar en 0 en producción.</p>' +
+        '</div>'
+    },
+    'doc-pago': {
+      title: '3. Verifica su pago (automático)',
+      html: '<p>El alumno ya no captura líneas: el sistema consulta <code>TES_TM_PAGOS_PORTAL</code> por su número de control y el periodo — el mismo registro que usa Control Escolar en ventanilla, cargado desde el Excel de Contabilidad mediante la herramienta <code>CargaPagosPortal</code>. Si encuentra uno o más pagos, los muestra enmascarados (últimos 4 dígitos de la línea + importe) y habilita el botón para continuar.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Qué pasa si acaba de pagar y no aparece?</p><p class="a">El pago se refleja hasta que Contabilidad lo reporta y se carga a la tabla. El botón <b>Verificar de nuevo</b> vuelve a consultar sin recargar la página.</p>' +
+        '<p class="q">¿Se recuerda el pago si cierra sesión y vuelve a entrar?</p><p class="a">Sí. El estado se lee de la base de datos, ligado a su número de control y al periodo — no depende de la sesión ni del navegador.</p>' +
+        '<p class="q">¿Puede un alumno usar el pago de otro?</p><p class="a">No. Cada registro de pago ya viene ligado a un número de control desde que se carga la tabla; el módulo solo busca los pagos del propio alumno.</p>' +
+        '<p class="q">¿El pago se "gasta" al inscribirse?</p><p class="a">No existe bandera de usado — igual que en ventanilla, el registro simplemente existe. Por eso conviene vigilar pagos duplicados (ver Riesgos).</p>' +
+        '</div>'
+    },
+    'doc-seleccion': {
+      title: '4. Selecciona materias',
+      html: '<p>Se muestra la misma carga sugerida que en ventanilla, con grupos y horarios editables, cupo por grupo y marca <b>R(n)</b> para materias en recurse. El nivel de inglés se preselecciona buscando el último registro en <b>toda la historia</b> del alumno (no solo el periodo anterior, para no "olvidar" a los liberados); si le corresponde Liberado, el selector queda fijo. También puede inscribir una actividad complementaria eligiéndola de la lista del periodo — salvo que ya tenga sus 5 acreditadas, en cuyo caso el selector se oculta.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Puede inscribirse sin elegir grupo de inglés?</p><p class="a">Solo si su nivel es "Liberado"; en cualquier otro caso el sistema exige un grupo antes de inscribir.</p>' +
+        '<p class="q">¿Puede marcar complementaria sin elegir actividad?</p><p class="a">No. Se valida en el navegador y otra vez en el servidor: o elige una actividad de la lista, o desmarca la opción.</p>' +
+        '</div>'
+    },
+    'doc-candados': {
+      title: '5. Confirma e inscribe (candados académicos)',
+      html: '<p>Antes de registrar la carga, se validan: créditos mínimos y máximos (Art. 34 y 35), porcentaje de avance para Servicio Social, actividades complementarias y avance para Residencias Profesionales, y el límite de 12 semestres (Art. 43 d). Justo antes de escribir en la base, se re-verifica que el alumno no esté ya inscrito.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Alguien puede saltarse estos candados?</p><p class="a">Los alumnos con una excepción registrada, y los de posgrado (las dos maestrías), se saltan estas reglas por diseño. El resto no puede evitarlas.</p>' +
+        '<p class="q">¿Qué pasa si algo bloquea la inscripción?</p><p class="a">Se muestra el mensaje del reglamento correspondiente y el alumno permanece en la pantalla de confirmación para ajustar su carga.</p>' +
+        '</div>'
+    },
+    'doc-comprobante': {
+      title: '6. Comprobante final',
+      html: '<p>Muestra la carga horaria registrada y las cuotas a cubrir con su importe total, con opción de imprimir el comprobante y la carga horaria por separado. El botón <b>Ver estatus</b> permite regresar a la tarjeta inicial (pagos, requisitos) sin re-inscribirse; <b>Terminar</b> confirma y regresa al inicio del portal.</p>' +
+        '<div class="qa">' +
+        '<p class="q">¿Qué pasa si ya estaba inscrito y vuelve a entrar al módulo?</p><p class="a">El sistema detecta que ya está inscrito en el periodo y muestra directamente el comprobante, sin permitir una segunda inscripción.</p>' +
+        '<p class="q">¿La inscripción depende de imprimir el comprobante?</p><p class="a">No. Queda registrada desde que se llega a esta pantalla; la impresión es solo un respaldo para el alumno.</p>' +
+        '</div>'
+    },
+    'risk-otroalumno': {
+      title: 'Protegido: usar el pago de otro alumno',
+      html: '<p>A diferencia del diseño anterior (captura manual de líneas), aquí no hay nada que "adjudicar": la consulta a <code>TES_TM_PAGOS_PORTAL</code> filtra por el número de control del alumno en sesión, y ese vínculo se establece desde que Control Escolar carga el Excel de Contabilidad.</p>' +
+        '<div class="qa"><p class="q">¿Qué condición debe cumplirse para que esto funcione?</p><p class="a">Que el archivo de Contabilidad siempre traiga el número de control correcto de cada pago antes de cargarse con la herramienta de carga de pagos.</p></div>'
+    },
+    'risk-html': {
+      title: 'Protegido: manipular el navegador',
+      html: '<p>Inspeccionar el HTML o forzar controles ocultos por consola (como reactivar el botón Continuar) no funciona en este módulo.</p>' +
+        '<div class="qa"><p class="q">¿Por qué no funciona?</p><p class="a">Porque el pago validado, la selección de materias y los candados académicos se verifican también del lado del servidor, no solo en la interfaz visual.</p></div>'
+    },
+    'risk-doble': {
+      title: 'Protegido: doble inscripción',
+      html: '<p>Si un alumno ya está inscrito en el periodo y vuelve a entrar, o intenta enviar el formulario dos veces, el sistema no genera un registro duplicado.</p>' +
+        '<div class="qa"><p class="q">¿Cómo lo detecta?</p><p class="a">Se verifica al entrar al módulo y otra vez justo antes de registrar la carga; además el navegador bloquea el doble clic durante 10 segundos por acción.</p></div>'
+    },
+    'risk-duplicado': {
+      title: 'Riesgo medio: pago duplicado',
+      html: '<p>Un alumno puede pagar el mismo concepto (por ejemplo, reinscripción) dos veces en líneas de captura distintas, por error. Esto no rompe el candado — basta con que exista un pago — pero es dinero que pierde si nadie lo detecta, porque la tabla no maneja bandera de "usado".</p>' +
+        '<div class="qa"><p class="q">¿Qué se recomienda?</p><p class="a">Un reporte periódico de pagos duplicados por concepto y alumno, para que Contabilidad pueda ayudarlos a recuperar el pago de más.</p></div>'
+    },
+    'risk-forzado': {
+      title: 'Riesgo medio: PeriodoForzado en producción',
+      html: '<p>La constante <code>PeriodoForzado</code> del code-behind existe solo para pruebas: fuerza un periodo específico saltándose la validación del calendario de reinscripciones. Si se libera a producción con un valor distinto de 0, cualquier alumno podría reinscribirse fuera de fechas.</p>' +
+        '<div class="qa"><p class="q">¿Cómo se mitiga?</p><p class="a">Está documentado con TODO en el código y el periodo forzado se muestra con la leyenda "(PERIODO FORZADO PARA PRUEBA)" en pantalla, lo que lo hace evidente en cualquier prueba de humo. Verificar que valga 0 debe ser parte del checklist de liberación.</p></div>'
+    },
+    'risk-ingles': {
+      title: 'Riesgo medio: deuda técnica en el registro de inglés',
+      html: '<p>El DELETE/INSERT que registra el nivel de inglés en la carga horaria se heredó de ventanilla y todavía concatena valores con <code>string.Format</code> en lugar de usar parámetros SQL. Los valores provienen de controles de servidor (no de texto libre del alumno), por lo que el riesgo práctico es bajo, pero rompe la convención del resto del módulo.</p>' +
+        '<div class="qa"><p class="q">¿Cuál es el plan?</p><p class="a">Migrar esas dos sentencias al helper <code>EjecutarParam</code> (ya usado en el resto del módulo) en la siguiente iteración.</p></div>'
+    }
+  };
+
+  var overlay = document.getElementById('overlay');
+  var modalTitle = document.getElementById('modalTitle');
+  var modalBody = document.getElementById('modalBody');
+
+  function openModal(key) {
+    var doc = DOCS[key];
+    if (!doc) return;
+    modalTitle.textContent = doc.title;
+    modalBody.innerHTML = doc.html;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('[data-doc]').forEach(function (el) {
+    el.addEventListener('click', function () { openModal(el.getAttribute('data-doc')); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(el.getAttribute('data-doc')); }
+    });
+  });
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  var sections = document.querySelectorAll('main section[id]');
+  var links = document.querySelectorAll('nav.tabs a');
+  window.addEventListener('scroll', function () {
+    var pos = window.scrollY + 90;
+    sections.forEach(function (sec) {
+      if (pos >= sec.offsetTop && pos < sec.offsetTop + sec.offsetHeight) {
+        links.forEach(function (l) { l.classList.remove('active'); });
+        var match = document.querySelector('nav.tabs a[href="#' + sec.id + '"]');
+        if (match) match.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
