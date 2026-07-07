@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actividad A1 - Algoritmo y Pseudocódigo</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:#eef2f7;
+padding:40px;
+color:#222;
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+color:#0d47a1;
+}
+
+h2{
+text-align:center;
+margin-bottom:30px;
+color:#444;
+}
+
+section{
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.12);
+margin-bottom:40px;
+}
+
+.center{
+text-align:center;
+}
+
+button{
+padding:15px 30px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#1565c0;
+color:white;
+cursor:pointer;
+margin-bottom:30px;
+transition:.3s;
+}
+
+button:hover{
+background:#0d47a1;
+transform:scale(1.05);
+}
+
+/* MAPA */
+
+.mapa{
+
+display:flex;
+justify-content:center;
+align-items:flex-start;
+gap:80px;
+margin-top:40px;
+flex-wrap:wrap;
+
+}
+
+.card{
+
+width:360px;
+background:#f7f9fc;
+border-radius:15px;
+padding:20px;
+border-top:8px solid #1565c0;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+
+}
+
+.card h3{
+
+text-align:center;
+margin-bottom:15px;
+color:#1565c0;
+
+}
+
+.card ul{
+
+padding-left:20px;
+margin-top:10px;
+
+}
+
+.card li{
+
+margin:8px 0;
+
+}
+
+.codigo{
+
+background:#1e1e1e;
+color:#7CFC00;
+padding:15px;
+border-radius:10px;
+font-family:Consolas;
+white-space:pre-wrap;
+margin-top:15px;
+
+}
+
+/* CUADRO */
+
+.sinoptico{
+
+display:flex;
+flex-direction:column;
+gap:20px;
+margin-top:30px;
+
+}
+
+.paso{
+
+display:flex;
+align-items:center;
+gap:20px;
+
+}
+
+.numero{
+
+width:60px;
+height:60px;
+background:#1565c0;
+color:white;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:24px;
+font-weight:bold;
+
+}
+
+.info{
+
+flex:1;
+background:#f5f7fb;
+padding:20px;
+border-left:6px solid #1565c0;
+border-radius:10px;
+
+}
+
+.info h4{
+
+margin-bottom:8px;
+color:#0d47a1;
+
+}
+
+footer{
+
+text-align:center;
+margin-top:30px;
+color:#777;
+
+}
+
+@media print{
+
+button{
+
+display:none;
+
+}
+
+body{
+
+background:white;
+
+}
+
+section{
+
+box-shadow:none;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="center">
+<button onclick="window.print()">🖨 Guardar como PDF</button>
+</div>
+
+<h1>Actividad A1</h1>
+<h2>Mapa Conceptual y Cuadro Sinóptico</h2>
+
+<section>
+
+<h2>Mapa Conceptual</h2>
+
+<div class="mapa">
+
+<div class="card">
+
+<h3>Algoritmo</h3>
+
+<b>Descripción</b>
+
+<p>
+Es una secuencia ordenada y finita de pasos que permite resolver un problema o realizar una tarea específica.
+</p>
+
+<br>
+
+<b>Características</b>
+
+<ul>
+
+<li>Entrada de datos.</li>
+
+<li>Secuencia lógica y ordenada.</li>
+
+<li>Produce una salida o resultado.</li>
+
+</ul>
+
+<br>
+
+<b>Ejemplo</b>
+
+<div class="codigo">
+Preparar Café
+
+Entrada:
+Agua
+Café
+Azúcar
+
+Proceso:
+1. Hervir agua.
+2. Agregar café.
+3. Mezclar.
+4. Agregar azúcar.
+
+Salida:
+Café listo.
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Pseudocódigo</h3>
+
+<b>Descripción</b>
+
+<p>
+Es la representación escrita de un algoritmo utilizando un lenguaje sencillo y estructurado, independiente de cualquier lenguaje de programación.
+</p>
+
+<br>
+
+<b>Características</b>
+
+<ul>
+
+<li>Fácil de leer.</li>
+
+<li>Describe la lógica paso a paso.</li>
+
+<li>No requiere sintaxis estricta.</li>
+
+</ul>
+
+<br>
+
+<b>Ejemplo</b>
+
+<div class="codigo">
+Inicio
+
+Escribir "Ingresa un número"
+
+Leer numero
+
+Si numero > 0 Entonces
+
+    Escribir "Número positivo"
+
+FinSi
+
+Fin
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>Cuadro Sinóptico</h2>
+
+<div class="sinoptico">
+
+<div class="paso">
+
+<div class="numero">1</div>
+
+<div class="info">
+
+<h4>Análisis</h4>
+
+Identificar el problema, comprender los requisitos y definir las entradas y salidas.
+
+</div>
+
+</div>
+
+<div class="paso">
+
+<div class="numero">2</div>
+
+<div class="info">
+
+<h4>Diseño</h4>
+
+Crear el algoritmo y representarlo mediante pseudocódigo o diagrama de flujo.
+
+</div>
+
+</div>
+
+<div class="paso">
+
+<div class="numero">3</div>
+
+<div class="info">
+
+<h4>Implementación</h4>
+
+Traducir el algoritmo a un lenguaje de programación.
+
+</div>
+
+</div>
+
+<div class="paso">
+
+<div class="numero">4</div>
+
+<div class="info">
+
+<h4>Pruebas</h4>
+
+Verificar que el programa funcione correctamente y corregir errores.
+
+</div>
+
+</div>
+
+<div class="paso">
+
+<div class="numero">5</div>
+
+<div class="info">
+
+<h4>Mantenimiento</h4>
+
+Actualizar el programa, corregir fallas y agregar mejoras.
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+Actividad A1 • Conceptos Básicos de Programación
+
+</footer>
+
+</body>
+</html>

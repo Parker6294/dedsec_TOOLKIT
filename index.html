@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>DEDSEC // TOOLKIT</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/menu.css">
+</head>
+
+<body>
+
+<!-- INTRO: se desvanece sola por CSS. Textos traducibles con data-k. -->
+<div class="boot" id="boot">
+  <div class="bl" data-k="boot0">&gt; DEDSEC TOOLKIT v1.0.0</div>
+  <div class="bl" data-k="boot1">&gt; estableciendo conexión segura...</div>
+  <div class="bl" data-k="boot2">&gt; verificando integridad... OK</div>
+  <div class="bl" data-k="boot3">&gt; enmascarando identidad... OK</div>
+  <div class="bl"><span class="cur" data-k="boot4">&gt; acceso anónimo concedido</span></div>
+</div>
+
+<!-- FONDO -->
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="video/bg.mp4" type="video/mp4">
+</video>
+<canvas class="rain" id="rain"></canvas>
+<div class="overlay-dark"></div>
+<div class="dither"></div>
+<div class="halo"></div>
+<div class="vignette"></div>
+<div class="screen-frame"><i></i><i></i><i></i><i></i></div>
+<div class="scan"></div>
+
+<!-- BARRA SUPERIOR -->
+<div class="topbar">
+  <span>&#9760; root@dedsec</span>
+  <span class="status">// DEDSEC NET &#9679; <span data-k="status">CONECTADO</span></span>
+  <span style="display:flex; align-items:center; gap:14px;">
+    <span class="clock" id="clock">--:--:--</span>
+    <button class="lang" id="lang" title="ES / EN">ES</button>
+  </span>
+</div>
+
+<!-- LAYOUT -->
+<div class="app">
+
+  <!-- IZQUIERDA -->
+  <div class="col-left">
+    <div class="heading" data-text="DEDSEC TOOLKIT">DEDSEC TOOLKIT</div>
+    <div class="subline" data-k="sub">Herramientas de respaldo y cifrado</div>
+
+    <div class="menu" id="rows">
+      <a class="row active" href="cifrador.html" data-i="0">
+        <span class="tag">[ENC]</span><span class="num">01.</span>
+        <span class="name">ENCRIPTADOR DE CONTRASEÑAS</span>
+        <span class="value ok">[LISTO]</span>
+      </a>
+      <a class="row" href="bitacoras.html" data-i="1">
+        <span class="tag">[RPT]</span><span class="num">02.</span>
+        <span class="name">CREACIÓN DE REPORTES</span>
+        <span class="value ok">[LISTO]</span>
+      </a>
+
+     <a class="row" href="/Documentacion_modulos/Indice_Documentacion_SIITESCI.html" data-i="1">
+        <span class="tag">[RPT]</span><span class="num">03.</span>
+        <span class="name">DOCUMENTACIO</span>
+        <span class="value ok">[LISTO]</span>
+      </a>
+      
+    </div>
+
+    <!-- TELEMETRÍA: valores de ejemplo; el code-behind puede llenar los id. -->
+    <div class="tele framed">
+      <div class="tt" data-k="teleTitle">// ESTADO DEL SISTEMA</div>
+      <div class="tr"><span data-k="teleDb">BASE DE DATOS</span><b class="ok" id="tele-db" data-k="teleDbVal">&#9679; CONECTADA</b></div>
+      <div class="tr"><span data-k="teleLast">ÚLTIMO RESPALDO</span><b id="tele-last">21/06/2026 03:00</b></div>
+      <div class="tr"><span data-k="teleRecords">REGISTROS</span><b id="tele-count">48,210</b></div>
+      <div class="tr"><span data-k="teleStorage">ALMACENAMIENTO</span>
+        <span class="barwrap">
+          <span class="bar"><span class="fill" id="tele-bar" style="width:62%"></span></span>
+          <b id="tele-pct">62%</b>
+        </span>
+      </div>
+    </div>
+
+   
+    <!-- Botón secreto (oculto hasta el Konami) -->
+    <a class="secret-btn" id="secret-btn" href="game.html">
+      <span class="tag">[??]</span>
+      <span class="name">PROTOCOLO OCULTO</span>
+      <span class="value">[LOCKED]</span>
+    </a>
+
+    <!-- LÍNEA DE COMANDO -->
+    <div class="cmdline">
+      <div><span class="prompt">root@dedsec:~$</span> status</div>
+      <div class="out" data-k="cmdOut">nodo conectado &middot; 2 herramientas disponibles</div>
+      <div class="out" data-k="cmdHint">los viejos arcades nunca mueren · ↑↑↓↓…</div>
+      <div><span class="prompt">root@dedsec:~$</span> <span class="cur"></span></div>
+    </div>
+  </div>
+
+  <!-- DERECHA -->
+  <div class="col-right">
+    <div class="panel framed">
+      <div class="ptitle" id="ptitle">Encriptador de Contraseñas</div>
+      <div class="pdesc" id="pdesc">Encripta y protege contraseñas con AES-256.</div>
+      <div class="pmeta"><span class="tags" id="pmeta-tags">AES-256 &middot; i18n</span><span class="open">[ENTER] <span data-k="open">ABRIR</span></span></div>
+    </div>
+    <div class="logbox framed">
+      <div class="lt" data-k="logTitle">// LOG DEL SISTEMA</div>
+      <div class="log" id="log"><div><span class="cur">&gt; ...</span></div></div>
+      <div class="watermark">&#9760;DEDSEC</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BARRA INFERIOR -->
+<div class="bottombar">
+  <span>v1.0.0 &nbsp; build.2026.06</span>
+  <span class="hints">
+    <span><span class="key">&#8593;&#8595;</span><span data-k="nav">NAVEGAR</span></span>
+    <span><span class="key">ENTER</span><span data-k="open">ABRIR</span></span>
+    <button class="mute" id="mute">[&#9834; ON]</button>
+  </span>
+</div>
+
+<script src="js/menu.js"></script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+    });
+}
+</script>
+</body>
+</html>
