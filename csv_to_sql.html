@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>DEDSEC // CSV_TO_SQL</title>
+<script src="./xlsx.full.min.js"></script>
+<style>
+  :root{
+    --bg:#050505;
+    --panel:#0b0b0b;
+    --panel-2:#111;
+    --line:#242424;
+    --line-2:#333;
+    --txt:#e8e8e8;
+    --dim:#8a8a8a;
+    --dimmer:#5c5c5c;
+    --hi:#fafafa;
+    --accent:#d8d8d8;
+    --ok:#cfcfcf;
+    --mono:'JetBrains Mono',ui-monospace,'Cascadia Code','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--mono);
+    font-size:13px;
+    line-height:1.5;
+    height:100vh;overflow:hidden;
+    display:flex;flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 3px);
+  }
+  ::selection{background:#2a2a2a;color:#fff}
+
+  /* ---------- scrollbars DEDSEC ---------- */
+  *{scrollbar-width:thin;scrollbar-color:#262626 #080808}
+  *::-webkit-scrollbar{width:9px;height:9px}
+  *::-webkit-scrollbar-track{background:#080808}
+  *::-webkit-scrollbar-thumb{background:#222;border:1px solid #333}
+  *::-webkit-scrollbar-thumb:hover{background:#3a3a3a}
+  *::-webkit-scrollbar-corner{background:#080808}
+
+  /* ---------- animaciones ---------- */
+  @keyframes bootIn{from{opacity:0;transform:translateY(16px) scale(.994)}to{opacity:1;transform:none}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  @keyframes rowIn{from{opacity:0;transform:translateX(-7px)}to{opacity:1;transform:none}}
+  @keyframes scan{0%{transform:translateY(-70px)}100%{transform:translateY(100vh)}}
+  @keyframes flick{0%,90%,100%{opacity:1}92%{opacity:.35}94%{opacity:1}96%{opacity:.6}}
+  @keyframes glowPulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(250,250,250,0)}50%{box-shadow:inset 0 0 22px 0 rgba(250,250,250,.09)}}
+  @keyframes caret{50%{opacity:0}}
+  @keyframes pop{0%{transform:scale(.9);opacity:.4}100%{transform:scale(1);opacity:1}}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+
+  .win{
+    width:100%;flex:1;min-height:0;position:relative;overflow:hidden;
+    background:var(--panel);
+    display:flex;flex-direction:column;
+    animation:bootIn .55s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .win::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:70px;pointer-events:none;z-index:5;
+    background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.028),rgba(255,255,255,0));
+    animation:scan 8s linear infinite;
+  }
+
+  /* title bar */
+  .bar{
+    display:flex;align-items:center;gap:10px;flex:none;
+    padding:11px 24px;
+    border-bottom:1px solid var(--line-2);
+    background:linear-gradient(#0f0f0f,#0a0a0a);
+    user-select:none;
+  }
+  .bar .dot{width:9px;height:9px;border:1px solid var(--dimmer);border-radius:50%}
+
+  .backbtn{
+    display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line-2);background:transparent;
+    color:var(--dim);font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
+    text-transform:uppercase;text-decoration:none;white-space:nowrap;
+    padding:5px 11px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;
+  }
+  .backbtn:hover{color:var(--hi);border-color:var(--dim);background:#131313}
+  .backbtn:active{background:#1a1a1a}
+  .backbtn .arw{font-size:13px;line-height:1}
+  .bar .title{
+    font-size:11px;letter-spacing:2px;color:var(--dim);
+    text-transform:uppercase;
+  }
+  .bar .title b{color:var(--hi);font-weight:700;animation:flick 7s infinite}
+  .bar .win-ctl{margin-left:auto;display:flex;gap:14px;color:var(--dimmer);font-size:12px}
+
+  .body{
+    flex:1;min-height:0;
+    display:grid;grid-template-columns:minmax(400px,1fr) 1.25fr;
+    gap:30px;padding:26px 34px 24px;
+    overflow:hidden;
+  }
+  @media(max-width:960px){
+    body{height:auto;overflow:auto}
+    .win{height:auto;flex:none;min-height:100vh;overflow:visible}
+    .body{display:flex;flex-direction:column;overflow:visible;padding:20px;gap:22px}
+    .col{display:contents}          /* promueve los bloques a hijos del body */
+    .out{flex:none;min-height:300px}
+    .schema-wrap{max-height:none}
+    .instr{order:99}                /* instrucciones siempre hasta abajo */
+  }
+  @media(max-width:560px){
+    .bar{padding:10px 14px;gap:8px}
+    .bar .title{font-size:10px;letter-spacing:1px}
+    .bar .title span{display:none}      /* oculta "— sql_server" */
+    .bar .win-ctl{gap:11px}
+    .body{padding:14px;gap:18px}
+    .row{flex-direction:column}
+    .row .field{flex:1 1 auto!important} /* vence el flex inline de "Fila encabezado" */
+    .opts{grid-template-columns:1fr}
+    .minirow{flex-direction:column}
+    .drop{padding:14px;font-size:11px}
+    .out{min-height:260px}
+    .out pre{font-size:11px;padding:12px}
+    #schema{font-size:11px}
+    #schema th,#schema td{padding:5px 7px}
+    #schema th{font-size:9px;letter-spacing:0}
+    .fillbar{width:32px}
+    .steps{padding:12px 14px}
+    .steps li{padding-left:30px}
+    .status{padding:9px 14px;gap:10px 12px;flex-wrap:wrap;font-size:9px}
+    .status .motto{margin-left:auto}
+    .btn{padding:13px;font-size:11px}
+  }
+  @media(max-width:380px){
+    .status .motto{display:none}
+    .copybar{flex-wrap:wrap;gap:6px}
+    .copybar .meta{flex-basis:100%}
+    .backbtn{padding:5px 8px;font-size:9px;letter-spacing:1px}
+  }
+
+  .col{display:flex;flex-direction:column;gap:16px;min-width:0;min-height:0;overflow-y:auto;padding-right:4px;animation:fadeUp .55s ease both}
+  .body>.col:nth-child(2){animation-delay:.13s}
+
+  .eyebrow{
+    font-size:10px;letter-spacing:3px;color:var(--dimmer);
+    text-transform:uppercase;display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow::before{content:"";width:14px;height:1px;background:var(--line-2)}
+
+  textarea{
+    width:100%;min-height:150px;resize:none;
+    background:var(--panel-2);color:var(--txt);
+    border:1px solid var(--line);
+    font-family:var(--mono);font-size:12.5px;line-height:1.55;
+    padding:12px;outline:none;
+    white-space:pre;overflow-x:auto;overflow-y:auto;tab-size:4;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  textarea:focus{border-color:var(--line-2);background:#0d0d0d;box-shadow:inset 0 0 0 1px #1c1c1c}
+  textarea::placeholder{color:var(--dimmer)}
+
+  .field{display:flex;flex-direction:column;gap:6px}
+  label.lbl{font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+  input[type=text]{
+    background:var(--panel-2);color:var(--hi);
+    border:1px solid var(--line);
+    font-family:var(--mono);font-size:13px;
+    padding:9px 11px;outline:none;
+  }
+  input[type=text]:focus{border-color:var(--line-2)}
+
+  select{
+    background:var(--panel-2);color:var(--txt);
+    border:1px solid var(--line);
+    font-family:var(--mono);font-size:12.5px;
+    padding:8px 10px;outline:none;cursor:pointer;
+  }
+
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+  .chk{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:12px;color:var(--dim);user-select:none}
+  .chk input{appearance:none;width:15px;height:15px;border:1px solid var(--line-2);background:var(--panel-2);cursor:pointer;position:relative;flex:none}
+  .chk input:checked{background:var(--hi);border-color:var(--hi)}
+  .chk input:checked::after{content:"";position:absolute;inset:3px;background:#000}
+  .chk:hover{color:var(--txt)}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:120px}
+
+  .btn{
+    width:100%;
+    background:var(--hi);color:#000;
+    border:none;font-family:var(--mono);font-weight:700;
+    font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    padding:12px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:filter .12s;
+  }
+  .btn:hover{filter:brightness(.85)}
+  .btn:active{filter:brightness(.7)}
+  .btn:not(.ghost){position:relative;animation:glowPulse 3.4s ease-in-out infinite}
+  .btn:not(.ghost)::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(120deg,transparent 30%,rgba(0,0,0,.08) 50%,transparent 70%);
+    transform:translateX(-120%);transition:transform .5s;
+  }
+  .btn:not(.ghost):hover::before{transform:translateX(120%)}
+  .btn .cur{animation:caret 1s steps(1) infinite}
+  .btn .cur{animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line-2);font-weight:400}
+  .btn.ghost:hover{color:var(--hi);border-color:var(--dim);filter:none}
+
+  /* schema table */
+  .schema-wrap{border:1px solid var(--line);background:var(--panel-2);max-height:32vh;overflow:auto;flex:none}
+  table{width:100%;border-collapse:collapse;font-size:11.5px}
+  th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--dimmer);font-weight:400;letter-spacing:1px;text-transform:uppercase;font-size:10px;position:sticky;top:0;background:#0c0c0c}
+  td{color:var(--txt)}
+  td.type{color:var(--hi)}
+  td.null{color:var(--dimmer)}
+  tr:last-child td{border-bottom:none}
+  #schema tbody tr{animation:rowIn .32s ease both}
+  .out pre{animation:fadeUp .3s ease both}
+  .mini:active{transform:scale(.94)}
+
+  .out{
+    position:relative;
+    background:#080808;border:1px solid var(--line);
+    flex:1;min-height:220px;
+    display:flex;flex-direction:column;
+  }
+  .out pre{
+    padding:16px;overflow:auto;flex:1;min-height:0;
+    font-size:12px;line-height:1.6;white-space:pre;color:var(--txt);
+  }
+  .out .empty{flex:1;display:flex;align-items:center;justify-content:center;
+    color:var(--dimmer);text-align:center;font-size:12px;letter-spacing:1px}
+  .k{color:var(--hi);font-weight:700}   /* keyword */
+  .s{color:#9fbf9f}                     /* string */
+  .n{color:#c9b98f}                     /* number */
+  .c{color:var(--dimmer)}               /* comment */
+  .id{color:#a9c7d8}                    /* identifier */
+
+  .copybar{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);background:#0c0c0c}
+  .copybar .meta{font-size:10px;color:var(--dimmer);letter-spacing:1px;margin-right:auto}
+  .mini{
+    background:transparent;border:1px solid var(--line-2);color:var(--dim);
+    font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;
+    padding:5px 10px;cursor:pointer;
+  }
+  .mini:hover{color:var(--hi);border-color:var(--dim)}
+
+  /* status bar */
+  .status{
+    display:flex;align-items:center;gap:16px;flex:none;
+    padding:10px 24px;border-top:1px solid var(--line-2);
+    background:linear-gradient(#0a0a0a,#070707);
+    font-size:10px;letter-spacing:1.5px;color:var(--dimmer);text-transform:uppercase;
+  }
+  .status .sig{display:flex;gap:3px;align-items:flex-end;height:11px}
+  .status .sig i{width:3px;background:var(--dim);display:block}
+  .status .sig i:nth-child(1){height:4px}
+  .status .sig i:nth-child(2){height:7px}
+  .status .sig i:nth-child(3){height:11px}
+  .status .motto{margin-left:auto;color:var(--dim)}
+  .status .warn{color:#d8b48a}
+
+  .hint{font-size:10.5px;color:var(--dimmer);line-height:1.6}
+  .hint b{color:var(--dim);font-weight:400}
+
+  .steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px;
+    border:1px solid var(--line);background:var(--panel-2);padding:14px 16px}
+  .steps li{counter-increment:s;position:relative;padding-left:34px;
+    font-size:11.5px;color:var(--dim);line-height:1.5}
+  .steps li::before{content:"0" counter(s);position:absolute;left:0;top:1px;
+    color:var(--dimmer);font-size:10px;letter-spacing:1px;
+    border:1px solid var(--line-2);padding:1px 5px}
+  .steps li b{color:var(--txt);font-weight:400}
+  .steps kbd{border:1px solid var(--line-2);background:#000;color:var(--hi);
+    padding:0 5px;font-family:var(--mono);font-size:10px}
+
+  .instr{display:flex;flex-direction:column;gap:12px}
+
+  /* ---------- drop zone excel ---------- */
+  .drop{
+    border:1px dashed var(--line-2);background:var(--panel-2);
+    padding:16px;text-align:center;font-size:11.5px;color:var(--dim);
+    cursor:pointer;transition:border-color .15s,background .15s,color .15s;
+    display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+  }
+  .drop:hover{border-color:var(--dim);color:var(--txt);background:#0e0e0e}
+  .drop.over{border-color:var(--hi);color:var(--hi);background:#131313}
+  .drop b{color:var(--hi);font-weight:400}
+  .drop .ic{font-size:15px;color:var(--dim)}
+  .drop .file{color:var(--hi);font-weight:400}
+
+  .divider{display:flex;align-items:center;gap:10px;color:var(--dimmer);font-size:10px;letter-spacing:2px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* sheet + header-row controls */
+  .minirow{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+  .minirow .field{flex:1;min-width:120px}
+  input[type=number]{
+    background:var(--panel-2);color:var(--hi);border:1px solid var(--line);
+    font-family:var(--mono);font-size:13px;padding:9px 11px;outline:none;width:100%;
+  }
+  input[type=number]:focus{border-color:var(--line-2)}
+
+  /* column selector table */
+  td.chkcell{width:34px;text-align:center}
+  td.chkcell input,th.chkcell input{
+    appearance:none;width:14px;height:14px;border:1px solid var(--line-2);
+    background:var(--panel-2);cursor:pointer;position:relative;vertical-align:middle;
+  }
+  td.chkcell input:checked,th.chkcell input:checked{background:var(--hi);border-color:var(--hi)}
+  td.chkcell input:checked::after,th.chkcell input:checked::after{content:"";position:absolute;inset:3px;background:#000}
+  tr.off{opacity:.4}
+  tr.off td.type,tr.off td.name{color:var(--dim)}
+  .fillbar{display:inline-block;width:44px;height:6px;background:#1a1a1a;border:1px solid var(--line-2);vertical-align:middle;position:relative}
+  .fillbar i{position:absolute;left:0;top:0;bottom:0;background:var(--dim)}
+  td.name{color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="win">
+
+  <div class="bar">
+    <a href="index.html" class="backbtn" title="Volver al menú"><span class="arw">‹</span> menú</a>
+    <span class="dot"></span>
+    <span class="title"><b>DEDSEC</b> // csv_to_sql <span style="color:var(--dimmer)">— sql_server</span></span>
+    <span class="win-ctl"><span>_</span><span>&#9633;</span><span>&#215;</span></span>
+  </div>
+
+  <div class="body">
+
+    <!-- INPUT COLUMN -->
+    <div class="col">
+      <div class="eyebrow">input // sube un excel o pega tus filas</div>
+
+      <div class="drop" id="drop">
+        <span class="ic">▤</span>
+        <span id="dropmsg">Arrastra un <b>.xlsx / .csv</b> aquí, o <b>haz clic</b> para elegir archivo</span>
+        <input type="file" id="file" accept=".xlsx,.xls,.csv,.tsv" hidden>
+      </div>
+
+      <div class="divider">o pega directo</div>
+
+      <textarea id="data" spellcheck="false" placeholder="Pega aquí desde Excel (tabuladores) o CSV.&#10;&#10;Ejemplo:&#10;Ref_NoControl	Ref_PeriodoId	Ref_Monto	Ref_Fecha&#10;253138098	61	1250.00	2026-01-15&#10;233107070	61	980.50	2026-01-16"></textarea>
+
+      <div class="minirow" id="sheetrow" style="display:none">
+        <div class="field">
+          <label class="lbl" for="sheet">Hoja del libro</label>
+          <select id="sheet"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="tabla">Nombre de tabla</label>
+        <input type="text" id="tabla" value="TES_TM_TABLA" spellcheck="false" autocomplete="off">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="lbl" for="delim">Delimitador</label>
+          <select id="delim">
+            <option value="auto">Auto-detectar</option>
+            <option value="\t">Tabulador (Excel)</option>
+            <option value=",">Coma (,)</option>
+            <option value=";">Punto y coma (;)</option>
+            <option value="|">Pipe (|)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl" for="modo">Salida</label>
+          <select id="modo">
+            <option value="both">CREATE TABLE + INSERTs</option>
+            <option value="insert">Solo INSERTs</option>
+            <option value="values">Solo VALUES</option>
+          </select>
+        </div>
+        <div class="field" style="flex:0 0 150px">
+          <label class="lbl" for="hdrrow">Fila encabezado</label>
+          <input type="number" id="hdrrow" min="0" value="1" title="Fila donde están los nombres de columna (0 = sin encabezado)">
+        </div>
+      </div>
+
+      <div class="opts">
+        <label class="chk"><input type="checkbox" id="brk" checked> Corchetes [col]</label>
+        <label class="chk"><input type="checkbox" id="nprefix" checked> Prefijo N'...' (Unicode)</label>
+        <label class="chk"><input type="checkbox" id="batch"> Batch (multi-fila)</label>
+        <label class="chk"><input type="checkbox" id="onlykeep" checked> Solo columnas marcadas</label>
+      </div>
+
+      <button class="btn" id="run">&gt; execute_generation <span class="cur">_</span></button>
+      <button class="btn ghost" id="demo">cargar ejemplo</button>
+
+      <div class="instr">
+        <div class="eyebrow">instrucciones</div>
+        <ol class="steps">
+          <li><b>Sube</b> un archivo .xlsx/.csv (arrastrando o con clic) o <b>pega</b> tus filas.</li>
+          <li>El sistema detecta solo la <b>fila de encabezados</b> aunque haya títulos o logos arriba.</li>
+          <li>Revisa las <b>columnas detectadas</b>: las importantes vienen marcadas — ajusta con los checkboxes.</li>
+          <li>Escribe el <b>nombre de la tabla</b> y ajusta las opciones si hace falta.</li>
+          <li>Pulsa <b>EXECUTE_GENERATION</b> (o <kbd>Ctrl</kbd>+<kbd>Enter</kbd>) y <b>Copia</b> o <b>Descarga</b> el T-SQL.</li>
+        </ol>
+
+        <div class="hint">
+          <b>Tip:</b> Al pegar desde Excel/SSMS se separa por tabulador automáticamente.
+          Los tipos (INT, DECIMAL, DATE, BIT, NVARCHAR…) y NULL/NOT NULL se infieren por columna.
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT COLUMN -->
+    <div class="col">
+      <div class="eyebrow">columnas detectadas // marca las que quieras importar</div>
+      <div class="schema-wrap">
+        <table id="schema">
+          <thead><tr>
+            <th class="chkcell"><input type="checkbox" id="chkall" checked title="Marcar / desmarcar todas"></th>
+            <th>#</th><th>Columna</th><th>Tipo SQL</th><th>Null</th><th>Datos</th>
+          </tr></thead>
+          <tbody><tr><td colspan="6" style="color:var(--dimmer);text-align:center;padding:16px">— sin datos —</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="eyebrow">output // t-sql</div>
+      <div class="out">
+        <div class="copybar">
+          <span class="meta" id="meta">0 filas · 0 columnas</span>
+          <button class="mini" id="copy">Copiar</button>
+          <button class="mini" id="dl">Descargar .sql</button>
+        </div>
+        <div class="empty" id="empty">// EXECUTE_GENERATION para producir el script</div>
+        <pre id="out" style="display:none"></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="status">
+    <span class="sig"><i></i><i></i><i></i></span>
+    <span>NODE: <span style="color:var(--dim)">LOCAL</span></span>
+    <span id="statmsg">READY</span>
+    <span class="motto">// PRIVACY IS A RIGHT</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  /* ---------- parsing ---------- */
+  function detectDelim(text){
+    const first = (text.split(/\r?\n/).find(l=>l.trim()!=="")||"");
+    const counts = {"\t":(first.match(/\t/g)||[]).length,
+                    ",":(first.match(/,/g)||[]).length,
+                    ";":(first.match(/;/g)||[]).length,
+                    "|":(first.match(/\|/g)||[]).length};
+    let best="\t",max=-1;
+    for(const d in counts){ if(counts[d]>max){max=counts[d];best=d;} }
+    return max>0?best:"\t";
+  }
+
+  function parseLine(line,delim){
+    const out=[]; let cur="",q=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(q){
+        if(ch==='"'){ if(line[i+1]==='"'){cur+='"';i++;} else q=false; }
+        else cur+=ch;
+      }else{
+        if(ch==='"') q=true;
+        else if(ch===delim){ out.push(cur); cur=""; }
+        else cur+=ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  }
+
+  function parse(text,delim){
+    const rows=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")
+                   .filter(l=>l.trim()!=="");
+    return rows.map(l=>parseLine(l,delim).map(c=>c.trim()));
+  }
+
+  /* ---------- type inference (SQL Server) ---------- */
+  function inferType(values){
+    const nn = values.filter(v=>v!==null && v!==undefined && v.trim()!=="");
+    const nullable = nn.length < values.length || nn.length===0;
+    if(nn.length===0) return {sql:"NVARCHAR(255)",nullable:true};
+
+    const all = f => nn.every(f);
+
+    if(all(v=>/^(0|1|true|false)$/i.test(v.trim())))
+      return {sql:"BIT",nullable};
+
+    if(all(v=>/^-?\d+$/.test(v.trim()))){
+      const inInt = all(v=>{ const n=Number(v.trim()); return n>=-2147483648 && n<=2147483647; });
+      return {sql: inInt?"INT":"BIGINT", nullable};
+    }
+
+    if(all(v=>/^-?\d+(\.\d+)?$/.test(v.trim()))){
+      let scale=0,prec=0;
+      nn.forEach(v=>{
+        const t=v.trim().replace("-","").replace(/^0+(?=\d)/,"");
+        const p=t.split(".");
+        const intD=(p[0]||"0").length||1;
+        const sc=p[1]?p[1].length:0;
+        scale=Math.max(scale,sc);
+        prec=Math.max(prec,intD+sc);
+      });
+      prec=Math.min(Math.max(prec,scale+1),38);
+      return {sql:`DECIMAL(${prec}, ${scale})`,nullable};
+    }
+
+    if(all(v=>/^\d{4}-\d{2}-\d{2}$/.test(v.trim())))
+      return {sql:"DATE",nullable};
+
+    if(all(v=>/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(v.trim())))
+      return {sql:"DATETIME",nullable};
+
+    const maxLen = nn.reduce((m,v)=>Math.max(m,v.length),0);
+    if(maxLen>4000) return {sql:"NVARCHAR(MAX)",nullable};
+    const size = maxLen<=50?50:maxLen<=100?100:maxLen<=255?255:maxLen<=500?500:maxLen<=1000?1000:4000;
+    return {sql:`NVARCHAR(${size})`,nullable};
+  }
+
+  function isNumericType(t){ return /^(INT|BIGINT|DECIMAL|BIT)/.test(t); }
+
+  function sanitizeCol(name,i){
+    let n=(name||"").trim().replace(/[^\w]/g,"_");
+    if(!n) n="Columna"+(i+1);
+    if(/^\d/.test(n)) n="_"+n;
+    return n;
+  }
+
+  /* ---------- value formatting ---------- */
+  function fmtValue(raw,type,useN){
+    if(raw===null||raw===undefined||raw.trim()==="") return "NULL";
+    const t=type.sql;
+    if(t==="BIT"){ const v=raw.trim().toLowerCase(); return (v==="1"||v==="true")?"1":"0"; }
+    if(/^(INT|BIGINT|DECIMAL)/.test(t)) return raw.trim();
+    const esc=raw.replace(/'/g,"''");
+    return (useN?"N":"")+"'"+esc+"'";
+  }
+
+  function qId(name,useBracket){ return useBracket?`[${name}]`:name; }
+
+  /* ---------- estado ---------- */
+  const state = { grid:[], dataRows:[], columns:[], hasData:false, source:"text", wb:null };
+  let lastSql="";
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function parseTextToGrid(){
+    const raw=$("data").value;
+    if(!raw.trim()) return [];
+    let delim=$("delim").value;
+    if(delim==="auto") delim=detectDelim(raw);
+    else if(delim==="\\t") delim="\t";
+    return parse(raw,delim);
+  }
+
+  /* ---------- detección de fila de encabezado ---------- */
+  function detectHeaderRow(grid){
+    const limit=Math.min(grid.length,20);
+    let best=0,bestScore=-1;
+    for(let r=0;r<limit;r++){
+      const cells=(grid[r]||[]).map(c=>String(c).trim());
+      const nonEmpty=cells.filter(c=>c!=="").length;
+      if(nonEmpty<2) continue;
+      const textCells=cells.filter(c=>c!=="" && !/^-?\d+(\.\d+)?$/.test(c) && c.length<=45).length;
+      const next=(grid[r+1]||[]).map(c=>String(c).trim());
+      const nextNon=next.filter(c=>c!=="").length;
+      const follow=nextNon>=Math.max(2,nonEmpty*0.5)?3:0;
+      const score=nonEmpty + textCells*2 + follow;
+      if(score>bestScore){ bestScore=score; best=r; }
+    }
+    return best;
+  }
+
+  /* ---------- construir columnas + auto-marcar importantes ---------- */
+  function buildColumns(){
+    const grid=state.grid;
+    const hv=parseInt($("hdrrow").value,10);
+    const hr=(isNaN(hv)||hv<1)?-1:Math.min(hv-1,grid.length-1);
+    const header=hr>=0?(grid[hr]||[]):[];
+    const dataRows=grid.slice(hr>=0?hr+1:0);
+    let nCols=header.length;
+    dataRows.forEach(r=>{ if(r.length>nCols) nCols=r.length; });
+
+    const cols=[];
+    for(let i=0;i<nCols;i++){
+      const rawName=hr>=0?String(header[i]==null?"":header[i]).trim():"";
+      const values=dataRows.map(r=>{ const v=r[i]; return (v==null)?"":String(v); });
+      const filled=values.filter(v=>v.trim()!=="").length;
+      const fill=dataRows.length?filled/dataRows.length:0;
+      const type=inferType(values);
+      const name=sanitizeCol(rawName,i);
+      const hasName=rawName!=="";
+      // "importante" = tiene nombre y buen llenado
+      const keep = hasName ? fill>=0.4 : false;
+      cols.push({idx:i,name,rawName,hasName,values,fill,type,keep});
+    }
+    // si ninguna quedó importante, marca las que al menos tengan datos o nombre
+    if(cols.length && !cols.some(c=>c.keep)) cols.forEach(c=>{ if(c.fill>0||c.hasName) c.keep=true; });
+
+    state.columns=cols;
+    state.dataRows=dataRows;
+    state.hasData=dataRows.length>0 && nCols>0;
+  }
+
+  /* ---------- ingesta ---------- */
+  function ingestText(autoHeader){
+    const grid=parseTextToGrid();
+    state.grid=grid; state.source="text";
+    if(!grid.length){ state.hasData=false; state.columns=[]; renderColumns(); generate(); return; }
+    if(autoHeader){ const hr=detectHeaderRow(grid); $("hdrrow").value=hr+1; }
+    buildColumns(); renderColumns(); generate();
+  }
+
+  /* ---------- generación T-SQL desde columnas marcadas ---------- */
+  function generate(){
+    const onlyKeep=$("onlykeep").checked;
+    const cols=state.columns.filter(c=>onlyKeep?c.keep:true);
+    const dataRows=state.dataRows;
+
+    if(!state.hasData || !cols.length){
+      lastSql="";
+      $("meta").textContent="0 filas · 0 columnas";
+      $("out").style.display="none"; $("empty").style.display="flex";
+      return;
+    }
+
+    const useBracket=$("brk").checked;
+    const useN=$("nprefix").checked;
+    const batch=$("batch").checked;
+    const mode=$("modo").value;
+    const table=($("tabla").value.trim()||"TES_TM_TABLA");
+    const tId=qId(table,useBracket);
+    const colList=cols.map(c=>qId(c.name,useBracket)).join(", ");
+    const nRows=dataRows.length;
+
+    const rowVals = r => cols.map(c=>fmtValue(c.values[r],c.type,useN)).join(", ");
+
+    const lines=[];
+    lines.push(`-- ============================================================`);
+    lines.push(`-- Generado por DEDSEC // csv_to_sql`);
+    lines.push(`-- Tabla: ${table}   ·   ${nRows} fila(s) · ${cols.length} columna(s)`);
+    lines.push(`-- ============================================================`);
+    lines.push("");
+
+    if(mode==="both"){
+      const w=Math.max(...cols.map(c=>qId(c.name,useBracket).length));
+      lines.push(`CREATE TABLE ${tId} (`);
+      const defs=cols.map(c=>{
+        const id=qId(c.name,useBracket).padEnd(w);
+        const nul=c.type.nullable?"NULL":"NOT NULL";
+        return `    ${id}  ${c.type.sql}  ${nul}`;
+      });
+      lines.push(defs.join(",\n"));
+      lines.push(");");
+      lines.push("");
+      lines.push("GO");
+      lines.push("");
+    }
+
+    if(mode==="both"||mode==="insert"){
+      if(batch){
+        const CH=1000;
+        for(let s=0;s<nRows;s+=CH){
+          lines.push(`INSERT INTO ${tId} (${colList}) VALUES`);
+          const chunk=[];
+          for(let r=s;r<Math.min(s+CH,nRows);r++) chunk.push(`    (${rowVals(r)})`);
+          lines.push(chunk.join(",\n")+";");
+          lines.push("");
+        }
+      }else{
+        for(let r=0;r<nRows;r++) lines.push(`INSERT INTO ${tId} (${colList}) VALUES (${rowVals(r)});`);
+        lines.push("");
+      }
+    }
+
+    if(mode==="values"){
+      const vals=[];
+      for(let r=0;r<nRows;r++) vals.push(`(${rowVals(r)})`);
+      lines.push(vals.join(",\n")+";");
+    }
+
+    lastSql=lines.join("\n");
+    $("meta").textContent=`${nRows} filas · ${cols.length} columnas`;
+    $("out").innerHTML=highlight(lastSql);
+    $("out").style.display="block";
+    $("out").style.animation="none"; void $("out").offsetHeight; $("out").style.animation="";
+    $("empty").style.display="none";
+    setStatus(`OK · ${nRows} FILAS · ${cols.length} COLS`,false);
+  }
+
+  /* ---------- highlight ---------- */
+  const KW=/\b(CREATE|TABLE|INSERT|INTO|VALUES|NULL|NOT|GO|INT|BIGINT|DECIMAL|BIT|DATE|DATETIME|NVARCHAR|MAX)\b/g;
+  function highlight(sql){
+    // line-by-line: comments first
+    return sql.split("\n").map(line=>{
+      if(/^\s*--/.test(line)) return `<span class="c">${esc(line)}</span>`;
+      let h=esc(line);
+      // strings N'...' or '...'
+      h=h.replace(/N?'(?:[^']|'')*'/g, m=>`<span class="s">${m}</span>`);
+      // keywords (avoid inside already-tagged spans — simple approach)
+      h=h.replace(KW, m=>`<span class="k">${m}</span>`);
+      // bracket identifiers
+      h=h.replace(/\[[^\]]+\]/g, m=>`<span class="id">${m}</span>`);
+      // bare numbers
+      h=h.replace(/(?<![\w>])(-?\d+(?:\.\d+)?)(?![\w<])/g, m=>`<span class="n">${m}</span>`);
+      return h;
+    }).join("\n");
+  }
+
+  /* ---------- render selector de columnas ---------- */
+  function renderColumns(){
+    const tb=$("schema").querySelector("tbody");
+    if(!state.columns.length){
+      tb.innerHTML=`<tr><td colspan="6" style="color:var(--dimmer);text-align:center;padding:16px">— sin datos —</td></tr>`;
+      $("chkall").checked=false; $("chkall").indeterminate=false;
+      return;
+    }
+    const brk=$("brk").checked;
+    tb.innerHTML=state.columns.map((c,i)=>{
+      const pct=Math.round(c.fill*100);
+      return `<tr class="${c.keep?'':'off'}" style="animation-delay:${i*40}ms">`+
+        `<td class="chkcell"><input type="checkbox" ${c.keep?'checked':''} data-col="${i}"></td>`+
+        `<td style="color:var(--dimmer)">${String(i+1).padStart(2,"0")}</td>`+
+        `<td class="name">${esc(qId(c.name,brk))}</td>`+
+        `<td class="type">${c.type.sql}</td>`+
+        `<td class="null">${c.type.nullable?"NULL":"NOT NULL"}</td>`+
+        `<td><span class="fillbar"><i style="width:${pct}%"></i></span> <span style="color:var(--dimmer);font-size:10px">${pct}%</span></td>`+
+      `</tr>`;
+    }).join("");
+    tb.querySelectorAll("input[data-col]").forEach(cb=>{
+      cb.addEventListener("change",()=>{
+        const i=+cb.getAttribute("data-col");
+        state.columns[i].keep=cb.checked;
+        cb.closest("tr").classList.toggle("off",!cb.checked);
+        syncChkAll();
+        generate();
+      });
+    });
+    syncChkAll();
+  }
+
+  function syncChkAll(){
+    const all=state.columns.length>0 && state.columns.every(c=>c.keep);
+    const some=state.columns.some(c=>c.keep);
+    const el=$("chkall");
+    el.checked=all; el.indeterminate=some&&!all;
+  }
+
+  function setStatus(msg,warn){ const el=$("statmsg"); el.textContent=msg; el.className=warn?"warn":""; }
+
+  function run(){
+    if($("data").value.trim()){ ingestText(false); }
+    else if(state.hasData){ generate(); }
+    else { setStatus("SIN DATOS",true); }
+  }
+
+  /* ---------- auto-grow textarea ---------- */
+  function autoGrow(){
+    const t=$("data");
+    const cap=Math.round(window.innerHeight*0.42);
+    t.style.height="auto";
+    t.style.height=Math.min(cap,Math.max(150,t.scrollHeight+2))+"px";
+  }
+  window.addEventListener("resize",autoGrow);
+
+  /* ---------- events ---------- */
+  $("run").addEventListener("click",run);
+  $("data").addEventListener("input",autoGrow);
+  $("data").addEventListener("paste",()=>setTimeout(()=>{ autoGrow(); state.source="text"; ingestText(true); },0));
+
+  // texto: al cambiar el textarea marca la fuente como texto
+  $("data").addEventListener("input",()=>{ if($("data").value.trim()) state.source="text"; });
+
+  // recalcular al cambiar opciones que afectan el resultado
+  $("hdrrow").addEventListener("input",()=>{ if(state.grid.length){ buildColumns(); renderColumns(); generate(); } });
+  $("delim").addEventListener("change",()=>{ if(state.source==="text" && $("data").value.trim()) ingestText(false); });
+  ["modo","brk","nprefix","batch","onlykeep"].forEach(id=>{
+    $(id).addEventListener("change",()=>{ if(id==="brk") renderColumns(); generate(); });
+  });
+  $("tabla").addEventListener("input",()=>{ if(state.hasData) generate(); });
+
+  // marcar / desmarcar todas
+  $("chkall").addEventListener("change",()=>{
+    const v=$("chkall").checked;
+    state.columns.forEach(c=>c.keep=v);
+    renderColumns(); generate();
+  });
+
+  /* ---------- carga de Excel / CSV ---------- */
+  function populateSheets(wb){
+    const sel=$("sheet");
+    sel.innerHTML=wb.SheetNames.map(n=>`<option>${esc(n)}</option>`).join("");
+    $("sheetrow").style.display = wb.SheetNames.length>1 ? "flex" : "none";
+  }
+
+  function loadSheet(name){
+    const ws=state.wb.Sheets[name];
+    if(!ws){ setStatus("HOJA VACÍA",true); return; }
+    const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:"",blankrows:false,raw:false,dateNF:"yyyy-mm-dd"});
+    const grid=aoa.map(r=>(r||[]).map(c=>c==null?"":String(c)));
+    state.grid=grid; state.source="excel"; state.hasData=grid.length>0;
+    const hr=detectHeaderRow(grid);
+    $("hdrrow").value=hr+1;
+    buildColumns(); renderColumns(); generate();
+  }
+
+  function handleFile(file){
+    if(!file) return;
+    const nm=file.name.toLowerCase();
+    setStatus("LEYENDO: "+file.name.toUpperCase(),false);
+
+    // CSV/TSV → al textarea (usa el parser de texto)
+    if(nm.endsWith(".csv")||nm.endsWith(".tsv")){
+      const rd=new FileReader();
+      rd.onload=e=>{
+        $("data").value=e.target.result;
+        $("dropmsg").innerHTML=`Archivo: <span class="file">${esc(file.name)}</span>`;
+        autoGrow(); state.source="text"; ingestText(true);
+        setStatus("CSV CARGADO: "+file.name.toUpperCase(),false);
+      };
+      rd.onerror=()=>setStatus("ERROR AL LEER CSV",true);
+      rd.readAsText(file,"utf-8");
+      return;
+    }
+
+    // XLSX/XLS → SheetJS
+    if(typeof XLSX==="undefined"){
+      setStatus("FALTA xlsx.full.min.js EN LA CARPETA",true);
+      $("dropmsg").innerHTML=`No se encontró <b>xlsx.full.min.js</b> — colócalo junto a este archivo`;
+      return;
+    }
+    const rd=new FileReader();
+    rd.onload=e=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array",cellDates:true,dateNF:"yyyy-mm-dd"});
+        state.wb=wb;
+        populateSheets(wb);
+        $("sheet").value=wb.SheetNames[0];
+        loadSheet(wb.SheetNames[0]);
+        $("dropmsg").innerHTML=`Archivo: <span class="file">${esc(file.name)}</span>`;
+        setStatus("EXCEL CARGADO: "+file.name.toUpperCase(),false);
+      }catch(err){ console.error(err); setStatus("ERROR AL LEER EL EXCEL",true); }
+    };
+    rd.onerror=()=>setStatus("ERROR AL LEER EL ARCHIVO",true);
+    rd.readAsArrayBuffer(file);
+  }
+
+  $("sheet").addEventListener("change",()=>loadSheet($("sheet").value));
+  $("file").addEventListener("change",e=>{ handleFile(e.target.files[0]); e.target.value=""; });
+
+  const drop=$("drop");
+  drop.addEventListener("click",()=>$("file").click());
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop",e=>{ const f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+  $("copy").addEventListener("click",()=>{
+    if(!lastSql){ setStatus("NADA QUE COPIAR",true); return; }
+    navigator.clipboard.writeText(lastSql).then(()=>{
+      const b=$("copy"); const t=b.textContent; b.textContent="Copiado ✓";
+      setStatus("COPIADO AL PORTAPAPELES",false);
+      setTimeout(()=>b.textContent=t,1400);
+    }).catch(()=>setStatus("ERROR AL COPIAR",true));
+  });
+
+  $("dl").addEventListener("click",()=>{
+    if(!lastSql){ setStatus("NADA QUE DESCARGAR",true); return; }
+    const name=($("tabla").value.trim()||"script")+".sql";
+    const blob=new Blob(["\ufeff"+lastSql],{type:"text/plain;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=name; a.click();
+    URL.revokeObjectURL(a.href);
+    setStatus("DESCARGADO: "+name,false);
+  });
+
+  $("demo").addEventListener("click",()=>{
+    $("data").value=
+`Ref_NoControl\tRef_PeriodoId\tRef_Monto\tRef_Pagado\tRef_Fecha\tRef_Concepto
+253138098\t61\t1250.00\t1\t2026-01-15\tReinscripción
+233107070\t61\t980.50\t0\t2026-01-16\tReinscripción
+209134077\t61\t1250.00\t1\t2026-01-16\tCurso especial`;
+    $("tabla").value="TES_TM_PAGOS_PORTAL";
+    $("dropmsg").innerHTML=`Arrastra un <b>.xlsx / .csv</b> aquí, o <b>haz clic</b> para elegir archivo`;
+    $("sheetrow").style.display="none";
+    autoGrow(); state.source="text"; ingestText(true);
+  });
+
+  // Ctrl+Enter para ejecutar
+  $("data").addEventListener("keydown",e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){ e.preventDefault(); run(); }
+  });
+})();
+</script>
+</body>
+</html>
